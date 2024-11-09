@@ -14,9 +14,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=20, null=False, unique=True)
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    
+    updated_at = models.DateTimeField(auto_now=True)  
     
     def __str__(self):
         return f"<User> {self.username} - {self.email}"
@@ -24,20 +22,19 @@ class User(AbstractUser):
 
 class UserProfile(models.Model):
     avatar = models.ImageField(upload_to='images/', null=True, blank=True)
-    bio = models.TextField(default="", null=False)
+    bio = models.CharField(max_length=158, default="", null=False)
     telephone = PhoneNumberField(null=True, blank=True)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='profile')
 
     def __str__(self):
-        return f"[{self.user.username}] {self.bio[:50]}"
+        return f"[{self.user.username}] {self.bio}"
     
 # signal to create a UserProfile for any new User 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
-    
 
 
 class Conversation(models.Model):
@@ -57,10 +54,11 @@ class Conversation(models.Model):
 
 
 class Message(models.Model):
+    """Message Model Representation"""
     id = models.CharField(
         max_length=40, default=uuid.uuid4,
         unique=True, null=False, primary_key=True)
-    body = models.TextField()
+    body = models.TextField(null=False)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
@@ -71,4 +69,5 @@ class Message(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"<Message> {self.body[:50] or self.body}"
+        return f"<Message> {self.body if len(self.body) < 50 else self.body[:50]}"
+    
