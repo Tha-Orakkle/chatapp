@@ -22,6 +22,7 @@ def register(request):
             user.email = user.email.strip().lower()
             user.username = user.username.strip().lower()
             user.save()
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
             return redirect('home')
 
