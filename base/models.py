@@ -5,7 +5,10 @@ from django.dispatch import receiver
 from phonenumber_field.modelfields  import PhoneNumberField
 
 import uuid
-# Create your models here.
+import os
+
+from .helper import user_upload_image_path
+
 
 class User(AbstractUser):
     id = models.CharField(
@@ -21,14 +24,22 @@ class User(AbstractUser):
 
 
 class UserProfile(models.Model):
-    avatar = models.ImageField(upload_to='images/', null=True, blank=True)
-    bio = models.CharField(max_length=158, default="", null=False)
+    avatar = models.ImageField(upload_to=user_upload_image_path, null=True, blank=True)
+    bio = models.CharField(max_length=158, default="", blank=True)
     telephone = PhoneNumberField(null=True, blank=True)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='profile')
 
     def __str__(self):
         return f"[{self.user.username}] {self.bio}"
+
+    def delete(self, *args, **kwargs):
+        print(self.avatar)
+        if self.avatar:
+            if os.path.isfile(self.avatar.path):
+                os.remove(self.avatar.path)
+        super().delete(*args, **kwargs)
+
     
 # signal to create a UserProfile for any new User 
 @receiver(post_save, sender=User)
