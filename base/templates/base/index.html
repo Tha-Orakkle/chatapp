@@ -4,7 +4,7 @@
 <h1>CHATAPP</h1>
 <p>Welcome @{{ request.user.username }}</p> 
 <hr>
-{% for user in request.user.followers.all %}
+{% for user in request.user.following.all %}
 <div>
     <a>@{{ user.username }}</a>
 </div>
@@ -13,3 +13,15 @@
 <a href="{% url 'find-friends' %}">Find Friends</a>
 
 {% endblock content %}
+
+{% block scripts %}
+<script>
+/**
+ * Variables
+ */
+const url = 'http://127.0.0.1:8000/ws/chat/{{ request.user.id }}/'
+const socket = new WebSocket(url)
+
+
+</script>
+{% endblock scripts %}
