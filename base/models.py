@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from phonenumber_field.modelfields  import PhoneNumberField
 
@@ -36,6 +36,8 @@ class User(AbstractUser):
         """follows a user"""
         if not self.is_following(user):
             self.following.add(user)
+            user.followers.add(self)
+            user.save()
             self.save()
     
     
@@ -43,6 +45,8 @@ class User(AbstractUser):
         """unfollows a user"""
         if self.is_following(user):
             self.following.remove(user)
+            user.followers.remove(self)
+            user.save()
             self.save()
 
 
@@ -56,23 +60,22 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"[{self.user.username}] {self.bio}"
 
-    # def delete(self, *args, **kwargs):
-    #     if self.avatar:
-    #         if os.path.isfile(self.avatar.path):
-    #             os.remove(self.avatar.path)
-    #     super().delete(*args, **kwargs)
 
-    
-# signal to create a UserProfile for any new User 
+# ======================
+# SIGNALS TO BE TRIGGERED DURING CREATION AND UPDATE USER/USERPROFILE
+# ======================
+
+# signal to create a UserProfile for any new User that is created
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
 
+# signal to delete a user's avatar from the file system when User is deleted 
 @receiver(post_delete, sender=UserProfile)
 def delete_user_avatar(sender, instance, **kwargs):
     if instance.avatar and os.path.isfile(instance.avatar.path):
-        os.remove(instance.avatar.path)
+        os.remove(instance.avatar.path)    
     
 
 class Conversation(models.Model):

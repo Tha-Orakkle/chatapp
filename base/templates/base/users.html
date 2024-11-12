@@ -8,8 +8,10 @@
 
 <div>
     <p>@{{ user.username }} 
-        {% if user not in request.user.friends.all %}
-        <a href="">Add User</a>        
+        {% if user not in request.user.following.all %}
+        <a href="">Follow</a>
+        {% else %}
+        <a href="">Unfollow</a>
         {% endif %}
     </p>
 </div>

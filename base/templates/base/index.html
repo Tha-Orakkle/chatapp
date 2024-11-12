@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>CHATAPP</h1>
-<p>Welcome @{{ user.username }}</p> 
+<p>Welcome @{{ request.user.username }}</p> 
 <a href="{% url 'find-friends' %}">Find Friends</a>
 
 {% endblock content %}

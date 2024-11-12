@@ -9,11 +9,13 @@ from .models import User
 # Create your views here.
 @login_required
 def index(request):
-    context = {'title': 'Home', 'user': request.user}
+    context = {'title': 'Home'}
     return render(request, 'base/index.html', context)
     
 
 def register(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     form = MyUserCreationForm()
     context = {'title': 'Registration'}
     if request.method == 'POST':
