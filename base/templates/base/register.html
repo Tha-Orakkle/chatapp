@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} - ChatApp</title>
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
-</head>
-<body>
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Register">
-    </form>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<h1>REGISTER</h1>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Register">
+</form>
+<a href="{% url 'social:begin' 'google-oauth2' %}">Sign in with Google</a>
+<a href="{% url 'social:begin' 'github' %}">Sign in with Github</a>
+
+<p>Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+
+{% endblock content %}

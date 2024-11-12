@@ -17,11 +17,33 @@ class User(AbstractUser):
     username = models.CharField(max_length=20, null=False, unique=True)
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)  
-    friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    following = models.ManyToManyField(
+        'self', blank=True, symmetrical=False, related_name='followers')
     
     def __str__(self):
+        """Str representation of model"""
         return f"<User> {self.username} - {self.email}"
+    
+    def is_following(self, user):
+        """checks if user is following the passed user"""
+        user = self.following.filter(id=user.id)
+        if user:
+            return True
+        return False
+    
+    def follow(self, user):
+        """follows a user"""
+        if not self.is_following(user):
+            self.following.add(user)
+            self.save()
+    
+    
+    def unfollow(self, user):
+        """unfollows a user"""
+        if self.is_following(user):
+            self.following.remove(user)
+            self.save()
 
 
 class UserProfile(models.Model):

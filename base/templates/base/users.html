@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Find Friends</h1>
+{% for user in users %}
+{% if user != request.user %}
+
+<div>
+    <p>@{{ user.username }} 
+        {% if user not in request.user.friends.all %}
+        <a href="">Add User</a>        
+        {% endif %}
+    </p>
+</div>
+
+{% endif %}
+{% endfor %}
+{% endblock content %}
+

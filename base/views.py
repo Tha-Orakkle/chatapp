@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .forms import MyUserCreationForm
+from .models import User
 
 # Create your views here.
 @login_required
@@ -53,3 +54,13 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('login')
+
+
+@login_required
+def find_users(request):
+    users = User.objects.order_by('username')
+    context = {
+        'title': 'Find Friends',
+        'users': users
+    }
+    return render(request, 'base/users.html', context)
