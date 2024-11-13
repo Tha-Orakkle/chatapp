@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if conversation.conversation_with %}
+<h2> Chat with {{ conversation.conversation_with.username }} </h2>
+{% else %}
+<p>User no longer exists</p>
+{% endif %}
+
+<div class="chat-box">
+    {% for message in conversatiob.messages.all %}
+    <p class="chat-message {% if request.user == message.sender %}right{% endif %}"> {{ message.body }}</p>
+    {% endfor %}
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    /**
+     * Variables
+     */
+    const chat_room_name = '{{ chat_room_name }}'
+    const url = `http://${window.location.host}/ws/chat/${ chat_room_name }/`;
+    const socket = new WebSocket(url);
+    /**
+     * Event Listeners
+     */
+    socket.onopen = function(e) {
+        console.log("connection established")
+    }
+    
+
+
+</script>
+{% endblock scripts %}   

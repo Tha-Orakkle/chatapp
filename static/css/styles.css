@@ -1,0 +1,10 @@
+.chat-box {
+    border: 1px solid black;
+    height: 500px;
+    width: 60%;
+    margin: 0 auto; 
+}
+
+.right {
+    text-align: right;
+}

@@ -84,6 +84,7 @@ class Conversation(models.Model):
         unique=True, null=False, primary_key=True)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='conversations')
+    conversation_with = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
