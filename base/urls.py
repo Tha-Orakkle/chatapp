@@ -7,8 +7,8 @@ urlpatterns = [
     path('login/', views.login_user, name='login'),
     path('logout/', views.logout_user, name='logout'),
     path('find-friends/', views.find_users, name='find-friends'),
-    path('chat/<str:other_user_id>', views.create_conversation, name='chat')
+    path('chat/<str:other_user_id>', views.create_conversation, name='chat'),
 
     # API VIEWS
-    path('follow-user/<str:user_id>/', api_views)
+    path('follow-or-unfollow/<str:user_id>/', api_views.follow_or_unfollow),
 ]

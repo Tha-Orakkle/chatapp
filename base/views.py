@@ -85,7 +85,7 @@ def create_conversation(request, other_user_id):
         messages.error(request, "An error occured")
         return redirect(request.META.get('HTTP_REFERER'))
     
-    chat_room_name = ":".join(sorted([str(request.user.id), other_user_id]))
+    chat_room_name = "_".join(sorted([str(request.user.id), other_user_id]))
     
     context = {
         'title': 'chat room',

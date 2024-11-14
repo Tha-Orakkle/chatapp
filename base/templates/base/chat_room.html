@@ -7,11 +7,18 @@
 <p>User no longer exists</p>
 {% endif %}
 
-<div class="chat-box">
-    {% for message in conversatiob.messages.all %}
-    <p class="chat-message {% if request.user == message.sender %}right{% endif %}"> {{ message.body }}</p>
-    {% endfor %}
+<div class="chat-container">
+    <div id="chat-box">
+        {% for message in conversatiob.messages.all %}
+        <p class="chat-message {% if request.user == message.sender %}right{% endif %}"> {{ message.body }}</p>
+        {% endfor %}
+    </div>
+    <div class="chat-input">
+        <input type="text" name="user-message-input" id="user-message-input">
+        <input type="submit" value="send" id="user-input-submit">
+    </div>
 </div>
+
 {% endblock content %}
 
 {% block scripts %}
@@ -19,16 +26,55 @@
     /**
      * Variables
      */
-    const chat_room_name = '{{ chat_room_name }}'
-    const url = `http://${window.location.host}/ws/chat/${ chat_room_name }/`;
+    // const user = '{{ request.username }}''
+
+    const chat_room_name = '{{ chat_room_name }}';
+    const url = `ws://${window.location.host}/ws/chat/${ chat_room_name }/`;
     const socket = new WebSocket(url);
+    const inputBtn = document.getElementById('user-input-submit');
+    const chatBox = document.getElementById('chat-box');
+    const userMessageInput = document.getElementById('user-message-input');
+
+
+    /**
+     * Functions
+     */
+    function sendMessage() {
+        // const userHTML = `<p class="chat-message right">${userMessageInput.value}</p>`;
+
+        // chatBox.innerHTML += userHTML;
+        socket.send(JSON.stringify({
+            'type': 'message',
+            'body': userMessageInput.value,
+        }));
+        userMessageInput.value = "";
+    }
+    
     /**
      * Event Listeners
      */
     socket.onopen = function(e) {
         console.log("connection established")
     }
-    
+
+    socket.onmessage = function(e) {
+        data = JSON.parse(e.data);
+        console.log(data);
+        const responseHTML = `<p class="chat-message left">${data.message}</p>`;
+        chatBox.innerHTML += responseHTML;
+    }
+
+    inputBtn.onclick = function(e) {
+        e.preventDefault();
+
+        sendMessage();
+    }
+
+    userMessageInput.onkeyup = function(e) {
+        if (e.keyCode === 13) {
+            sendMessage();
+        }
+    }
 
 
 </script>
