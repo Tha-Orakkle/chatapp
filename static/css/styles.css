@@ -5,6 +5,10 @@
     margin: 0 auto; 
 }
 
+#chat-box {
+    height: 80%;
+    overflow: scroll;
+}
 .right {
     text-align: right;
 }

@@ -9,7 +9,7 @@
 
 <div class="chat-container">
     <div id="chat-box">
-        {% for message in conversatiob.messages.all %}
+        {% for message in conversation.messages.all %}
         <p class="chat-message {% if request.user == message.sender %}right{% endif %}"> {{ message.body }}</p>
         {% endfor %}
     </div>
@@ -26,8 +26,8 @@
     /**
      * Variables
      */
-    // const user = '{{ request.username }}''
-
+    const user_id = '{{ request.user.id }}';
+    const conversation_id = '{{ conversation.id }}';
     const chat_room_name = '{{ chat_room_name }}';
     const url = `ws://${window.location.host}/ws/chat/${ chat_room_name }/`;
     const socket = new WebSocket(url);
@@ -40,12 +40,10 @@
      * Functions
      */
     function sendMessage() {
-        // const userHTML = `<p class="chat-message right">${userMessageInput.value}</p>`;
-
-        // chatBox.innerHTML += userHTML;
         socket.send(JSON.stringify({
             'type': 'message',
             'body': userMessageInput.value,
+            'conversation_id': conversation_id,
         }));
         userMessageInput.value = "";
     }
@@ -58,9 +56,15 @@
     }
 
     socket.onmessage = function(e) {
+        let responseHTML = '';
         data = JSON.parse(e.data);
         console.log(data);
-        const responseHTML = `<p class="chat-message left">${data.message}</p>`;
+        if (data.sender_id === user_id) {
+            responseHTML = `<p class="chat-message right">${data.message}</p>`;
+        } else {
+            responseHTML = `<p class="chat-message">${data.message}</p>`;
+
+        }
         chatBox.innerHTML += responseHTML;
     }
 
