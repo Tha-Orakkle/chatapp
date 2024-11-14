@@ -7,11 +7,12 @@
 {% if user != request.user %}
 
 <div>
+    
     <p>@{{ user.username }} 
         {% if user not in request.user.following.all %}
-        <a href="">Follow</a>
+        <button class='follow-btn' data-following="false" user-id="{{ user.id }}">Follow</button>
         {% else %}
-        <a href="">Unfollow</a>
+        <button class='follow-btn' data-following="true" user-id="{{ user.id }}">Unfollow</button>
         {% endif %}
     </p>
 </div>
@@ -19,4 +20,49 @@
 {% endif %}
 {% endfor %}
 {% endblock content %}
+
+{% block scripts %}
+<script>
+    const followButtons = document.querySelectorAll('.follow-btn');
+
+
+    followButtons.forEach(button => {
+        const userToFollowId = button.getAttribute('user-id');
+        // button.onclick = async () => {
+
+        button.addEventListener('click', async () => {
+            const action = (button.getAttribute('data-following') === 'true') ? 'unfollow' : 'follow';
+            const url = `http://${window.location.host}/follow-or-unfollow/${userToFollowId}/?action=${action}`;
+
+            try {
+                response = await fetch(url);
+                if (response.ok) {
+                    data = await response.json();
+                    console.log(data);
+                    if (data.status === 'unfollowed') {
+                        button.setAttribute('data-following', false);
+                        button.textContent = 'Follow';
+                    } else if (data.status === 'followed') {
+                        button.setAttribute('data-following', true);
+                        button.textContent = 'Unfollow';
+                    } else {
+                        console.error("Error updating follow status", response.statusText)
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error)
+            }
+            
+        })
+
+    })
+
+
+
+    
+
+</script>
+
+
+{% endblock scripts %}
 

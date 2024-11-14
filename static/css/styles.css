@@ -1,0 +1,14 @@
+.chat-container {
+    border: 1px solid black;
+    height: 500px;
+    width: 60%;
+    margin: 0 auto; 
+}
+
+#chat-box {
+    height: 80%;
+    overflow: scroll;
+}
+.right {
+    text-align: right;
+}

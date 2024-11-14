@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .forms import MyUserCreationForm
-from .models import User
+from .models import User, UserProfile, Conversation, Message
 
 # Create your views here.
 @login_required
@@ -66,3 +66,30 @@ def find_users(request):
         'users': users
     }
     return render(request, 'base/users.html', context)
+
+@login_required
+def create_conversation(request, other_user_id):
+    """creates conversation with other user"""
+    try:
+        other_user = User.objects.get(id=other_user_id)
+    except User.DoesNotExist:
+        other_user = None
+    
+    conversation, created = Conversation.objects.get_or_create(
+        user=request.user, conversation_with=other_user,
+        defaults={
+            'user': request.user,
+            'conversation_with': other_user,
+        })
+    if not conversation:
+        messages.error(request, "An error occured")
+        return redirect(request.META.get('HTTP_REFERER'))
+    
+    chat_room_name = "_".join(sorted([str(request.user.id), other_user_id]))
+    
+    context = {
+        'title': 'chat room',
+        'conversation': conversation,
+        'chat_room_name': chat_room_name
+    }
+    return render(request, 'base/chat_room.html', context)
