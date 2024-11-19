@@ -2,8 +2,32 @@
 
 {% block content %}
 
+{% include "nav.html" %}
+
 <h1>Find Friends</h1>
+{% if following %}
+<h2>Friends</h2>
+{% for usr in following %}
+<div>
+    <a href="{% url 'chat' usr.id %}">@{{ usr.username }}</a>
+    <button class='follow-btn' data-following="true" user-id="{{ usr.id }}">Unfollow</button>
+</div>
+<br>
+{% endfor %}
+{% endif %}
+
+<hr>
+{% if users %}
+<h2>Find New Friends</h2>
+
 {% for user in users %}
+<div>
+    <a href="{% url 'chat' user.id %}">@{{ user.username }}</a>
+    <button class='follow-btn' data-following="false" user-id="{{ user.id }}">Follow</button>
+</div>
+{% endfor %}
+{% endif %}
+{% comment %} {% for user in users %}
 {% if user != request.user %}
 
 <div>
@@ -18,7 +42,7 @@
 </div>
 
 {% endif %}
-{% endfor %}
+{% endfor %} {% endcomment %}
 {% endblock content %}
 
 {% block scripts %}

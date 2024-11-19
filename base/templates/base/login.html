@@ -1,29 +1,57 @@
 {% extends "base.html" %}
-
+{% load static %}
+{% block body_class %}register-login-page{% endblock body_class %}
 {% block content %}
-<div class="login-container">
-    <h1>Sign in to continue</h1>
-    <form action="" method="post" class="login-form">
-        {% if messages %}
-            {% for message in messages%}
-            <p class="messages">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-        {% csrf_token %}
-        <div class="form-item">
-            <input type="text" name="username" id="username" placeholder="username" required>
+
+<div class="register-login-container">
+    <div class="register-login-content">
+        <div class="register-login-header">
+            <h2>Welcome Back!</h2>
+            <p>Sign in to continue</p>
         </div>
-        <div class="form-item">
-            <input type="password" name="password" id="password" placeholder="**********" required>
+            {% if messages %}
+            <div class="login-errors">
+
+                {% for message in messages%}
+                <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        <div class="login-form-wrapper">
+            <form action="" method="post" class="login-form">
+                
+                {% csrf_token %}
+                <div class="form-item">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" placeholder="jaykay" required>
+                </div>
+                <div class="form-item">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" placeholder="**********" required>
+                </div>
+                <div class="form-submit">
+                    <input type="submit" value="Login">
+                </div>
+            </form>
         </div>
-        <div class="form-submit">
-            <input type="submit" value="Login">
+        <div class="signin-with">sign in with</div>
+        <div class="signin-options">
+            <a href="{% url 'social:begin' 'google-oauth2' %}" class="signin-option-item">
+                <img src="{% static 'images/icons/google.png' %}" alt="google logo" class="icon">
+                <span>Google</span>
+            </a>
+            <a href="{% url 'social:begin' 'github' %}" class="signin-option-item">
+                <img src="{% static 'images/icons/github.png' %}" alt="github logo" class="icon">
+                <span>Github</span>
+            </a>
+            
         </div>
-    </form>
-    <a href="{% url 'social:begin' 'google-oauth2' %}">Sign in with Google</a>
-    <a href="{% url 'social:begin' 'github' %}">Sign in with Github</a>
-    <p>Don't have an account? <a href="{% url 'register' %}">Create One</a></p>
-    
+        
+        <p class="create-signin">Don't have an account? <a href="{% url 'register' %}">Create One</a></p>
+    </div>
+
+
 </div>
+
 
 {% endblock content %}

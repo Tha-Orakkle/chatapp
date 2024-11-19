@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include "nav.html" %}
 {% if conversation.conversation_with %}
 <h2> Chat with {{ conversation.conversation_with.username }} </h2>
 {% else %}

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include "nav.html" %}
 <h1>CHATAPP</h1>
 <p>Welcome @{{ request.user.username }}</p> 
 {% if error %}
@@ -8,12 +9,20 @@
 {% endif %}
 
 <hr>
-{% for user in request.user.following.all %}
+{% if conversations %}
+{% for conversation in conversations %}
 <div>
-    <a href="{% url 'chat' user.id %}">@{{ user.username }}</a>
+    <a href="{% url 'chat' conversation.conversation_with.id %}">@{{ conversation.conversation_with.username }}
+        <span>{{ conversation.messages.first.body }}</span>
+    </a>
+
 </div>
+<br>
 {% endfor %}
+{% endif %}
+    
+
 <hr>
-<a href="{% url 'find-friends' %}">Find Friends</a>
+<a href="{% url 'find-users' %}">start new conversation</a>
 
 {% endblock content %}

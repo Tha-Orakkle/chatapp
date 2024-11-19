@@ -9,7 +9,11 @@ from .models import User, UserProfile, Conversation, Message
 # Create your views here.
 @login_required
 def index(request):
-    context = {'title': 'Home'}
+    context = {
+        'title': 'Home',
+        'conversations': request.user.conversations.all()
+    }
+
     return render(request, 'base/index.html', context)
     
 
@@ -28,7 +32,7 @@ def register(request):
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
             return redirect('home')
-
+        
         context.update({'form': form})
         return render(request, 'base/register.html', context)
             
@@ -57,12 +61,15 @@ def logout_user(request):
     logout(request)
     return redirect('login')
 
-
+# this will be refactored to be a search result
 @login_required
 def find_users(request):
-    users = User.objects.order_by('username')
+    following = request.user.following
+    exclude_id = list(following.values_list('id', flat=True)) + [request.user.id]
+    users = User.objects.exclude(id__in=exclude_id) 
     context = {
         'title': 'Find Friends',
+        'following': following.all(),
         'users': users
     }
     return render(request, 'base/users.html', context)

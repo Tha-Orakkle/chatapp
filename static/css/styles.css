@@ -9,27 +9,158 @@ body {
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
-   
-}
-.content-container {
-    border: 1px solid black;
-    border-radius: 15px;
-    margin: 5% auto;
-    width: 70%;
-    height: 500PX;
-
 }
 
-/* ---------LOGIN STYLE START ------------- */
-.login-container {
-    width: 50%;
-    margin: 0 auto;
-    border: 1px solid black;
-    margin-top: 10%;
+/* ---------LOGIN AND REGISTRATION STYLE START ------------- */
+
+.register-login-page {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-image: url('/static/images/bg-chatapp.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.register-login-container {
+    background: #fff;
+    border-radius: 20px;
+    width: 60%;
+    margin: 3% auto;
     padding: 20px;
-    
+    /* box-shadow: 10px 10px 10px #c5c5c5; */
 }
-/* ---------LOGIN STYLE END ------------- */
+
+.register-login-content {
+    width: 55%;
+    margin: 0 auto;
+}
+
+.register-login-header {
+    margin-top: 70px;
+    margin-bottom: 50px;
+
+    text-align: center;
+}
+
+.register-login-header h2 {
+    margin-bottom: 0;
+}
+
+.register-login-container p {
+    margin-top: 10px;
+}
+
+label {
+    font-size: 14px;
+}
+
+.register-login-container .form-item,
+.register-login-container .form-submit {
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+.register-login-container input {
+    font-family: inherit;
+    width: 100%;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+
+}
+
+.register-login-container input:not([type='submit']){
+    border: 1px solid #cacaca;
+}
+
+.register-login-container input[type='submit']{
+    font-size: 16px;
+    background-color: #6a2dda;
+    color: #fff;
+    border: none;
+}
+
+
+.login-errors {
+    font-size: 14px;
+    background-color: #80ccff;
+    border: 1px solid #6cc4ff;
+    border-radius: 5px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.errors {
+    font-size: 12px;
+    color: red;
+}
+
+.signin-with {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #333;
+}
+
+.signin-with::before, 
+.signin-with::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ccc;
+    margin: 0 10px;
+}
+
+.signin-options {
+    margin-top: 30px;
+    margin-bottom: 50px;
+    align-content: center;
+    display: flex;
+}
+
+.signin-option-item {
+    text-decoration: none;
+    border: 1px solid #333;
+    padding: 10px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+    justify-content: center;
+    color: black;
+}
+
+.icon {
+    height: 20px;
+    width: 20px;
+    margin-right: 5px;
+}
+
+
+.create-signin {
+    text-align: center;
+    margin-bottom: 70px;
+}
+.create-signin a {
+    color: #333;
+}
+
+
+/* ---------LOGIN AND REGISTRATION STYLE END ------------- */
+
+
+
+/* ---------LOGIN AND REGISTRATION STYLE START ------------- */
+
+
+
+/* ---------LOGIN AND REGISTRATION STYLE END ------------- */
+
+
+/* ---------CHATROOM STYLE START ------------- */
+
+
 
 .chat-container {
     border: 1px solid black;
@@ -45,3 +176,5 @@ body {
 .right {
     text-align: right;
 }
+
+/* ---------CHATROOM STYLE END ------------- */

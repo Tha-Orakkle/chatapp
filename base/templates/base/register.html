@@ -1,15 +1,56 @@
 {% extends "base.html" %}
-
+{% load static %}
+{% block body_class %}register-login-page{% endblock body_class %}
 {% block content %}
-<h1>REGISTER</h1>
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Register">
-</form>
-<a href="{% url 'social:begin' 'google-oauth2' %}">Sign in with Google</a>
-<a href="{% url 'social:begin' 'github' %}">Sign in with Github</a>
 
-<p>Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+<div class="register-login-container">
+    <div class="register-login-content">
+        <div class="register-login-header">
+            <h2>Register Account</h2>
+            <p>Get a chatapp account for free</p>
+        </div>
 
+        <div class="register-form-wrapper">
+            <form action="" method="post" class="register-form">
+
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-item">
+                    {{ field.label_tag }}
+                    {{ field }}
+
+                    {% if field.errors %}
+                        <div>
+                            {% for error in field.errors %}
+                            <p class="errors">* {{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                </div>   
+                {% endfor %}
+                <div class="form-submit">
+                    <input type="submit" value="Register">
+                </div>
+            </form>
+        </div>
+        <div class="signin-with">sign in with</div>
+        <div class="signin-options">
+            <a href="{% url 'social:begin' 'google-oauth2' %}" class="signin-option-item">
+                <img src="{% static 'images/icons/google.png' %}" alt="google logo" class="icon">
+                <span>Google</span>
+            </a>
+            <a href="{% url 'social:begin' 'github' %}" class="signin-option-item">
+                <img src="{% static 'images/icons/github.png' %}" alt="github logo" class="icon">
+                <span>Github</span>
+            </a>
+            
+        </div>
+        <div class="create-signin">
+            <p>Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+        </div>
+    </div>
+
+</div>
+    
 {% endblock content %}
