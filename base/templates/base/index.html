@@ -1,28 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% include "nav.html" %}
-<h1>CHATAPP</h1>
-<p>Welcome @{{ request.user.username }}</p> 
-{% if error %}
-<p>{{ error }}</p>
-{% endif %}
+{% comment %} <h1>CHATAPP</h1>
+<p>Welcome @{{ request.user.username }}</p>  {% endcomment %}
 
-<hr>
-{% if conversations %}
-{% for conversation in conversations %}
-<div>
-    <a href="{% url 'chat' conversation.conversation_with.id %}">@{{ conversation.conversation_with.username }}
-        <span>{{ conversation.messages.first.body }}</span>
-    </a>
+<div class="chatapp-main-wrapper">
+    {% include "nav.html" %}
 
+    <div class="sections-display grid-item">
+        {% include "base/partials/messages.html" %}
+    </div>
+
+    {% include "base/partials/chat_box.html" %}
 </div>
-<br>
-{% endfor %}
-{% endif %}
-    
 
-<hr>
-<a href="{% url 'find-users' %}">start new conversation</a>
+{% comment %} <hr>
+<a href="{% url 'find-users' %}">start new conversation</a> {% endcomment %}
 
 {% endblock content %}

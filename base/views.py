@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .forms import MyUserCreationForm
+from .forms import MyUserCreationForm, UserProfileForm
 from .models import User, UserProfile, Conversation, Message
 
 # Create your views here.
@@ -31,13 +31,29 @@ def register(request):
             user.save()
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
-            return redirect('home')
+            return redirect('register-user-profile')
         
         context.update({'form': form})
         return render(request, 'base/register.html', context)
             
     context['form'] = form
     return render(request, 'base/register.html', context)
+
+
+@login_required
+def register_user_profile(request):
+    context = {'title': 'User Profile'}
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        
+        context.update({'form': form})
+        return render(request, 'base/register_user_profile.html', context)
+        
+    context['form'] = UserProfileForm()
+    return render(request, 'base/register_user_profile.html', context)
 
 
 def login_user(request):

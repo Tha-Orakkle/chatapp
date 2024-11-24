@@ -51,9 +51,13 @@ class User(AbstractUser):
 
 
 class UserProfile(models.Model):
-    avatar = models.ImageField(upload_to=user_upload_image_path, null=True, blank=True)
-    bio = models.CharField(max_length=158, default="", blank=True)
-    telephone = PhoneNumberField(null=True, blank=True)
+    avatar = models.ImageField(upload_to=user_upload_image_path, 
+                               default='default/default.png',
+                               null=True, blank=True)
+    full_name = models.CharField(max_length=68, default="", blank=True)
+    bio = models.TextField(default="", blank=True)
+    # bio = models.CharField(max_length=158, default="", blank=True)
+    phone_number = PhoneNumberField(unique=True, null=True, blank=True)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='profile')
 
@@ -75,7 +79,8 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=UserProfile)
 def delete_user_avatar(sender, instance, **kwargs):
     if instance.avatar and os.path.isfile(instance.avatar.path):
-        os.remove(instance.avatar.path)    
+        if os.path.basename(instance.avatar.url) != 'default.png':
+            os.remove(instance.avatar.path)
     
 
 class Conversation(models.Model):

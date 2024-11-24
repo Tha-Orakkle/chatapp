@@ -1,0 +1,86 @@
+{% load static %}
+
+<div class="messages-section">
+    <div class="messages-header">
+        <h2>Messages <span>(message count)</span></h2>
+        <div class="search-container">
+            <input type="text" placeholder="Search..." class="search-input">
+            <img src="{% static 'images/icons/search.png' %}" alt="search icon" class="search-icon">
+        </div>
+    </div>
+    
+
+    <div class="all-conversations scroll-container" id="scroll-container">
+
+        <div class="favorite-conversations">
+            <h6 class="favorites-header">FAVORITES</h6>
+            <div class="conversation">
+                <div class="conversation-avatar conversation-item"></div>
+                <div class="conversation-info conversation-item">
+                    <p class="conversation-with">Victoria Lane</p>
+                    <p>Hey, How are you doing?</p>
+                </div>
+                <div class="unread-messages">
+                    <p>79</p>
+                </div>
+            </div>
+            <div class="conversation">
+                <div class="conversation-avatar conversation-item"></div>
+                <div class="conversation-info conversation-item">
+                    <p class="conversation-with">Peezy Jack</p>
+                    <p>Lorem ipsum dolor sit amet.</p>
+                </div>
+                <div class="unread-messages">
+                    <p>7</p>
+                </div>
+            </div>
+            <div class="conversation">
+                <div class="conversation-avatar conversation-item"></div>
+                <div class="conversation-info conversation-item">
+                    <p class="conversation-with">Desmond Elliot</p>
+                    <p>Lorem ipsum dolor sit amet</p>
+                </div>
+                <div class="unread-messages">
+                    <p>7</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="open-conversations-list">
+            <div class="open-conversation-header-wrapper">
+                <h6 class="open-conversation-header">DIRECT MESSAGES</h6>
+                <button class="start-new-convo">
+                    <img src="{% static 'images/icons/plus.png' %}"
+                        alt="plus icon to start new conversation"
+                        class="start-new-convo-icon">
+                </button>
+            </div>
+            
+            {% if conversations %}
+            {% for conversation in conversations %}
+            <div class="conversation">
+                <div class="conversation-avatar conversation-item"></div>
+                <div class="conversation-info conversation-item">
+                    <p class="conversation-with">{{ conversation.conversation_with.username }}</p>
+                    <p>{{ conversation.messages.first.body }}</p>
+                </div>
+                <div class="unread-messages">
+                    <p>7</p>
+                </div>
+            </div>
+            <!-- <div class="open-conversation">
+                <a href="{% url 'chat' conversation.conversation_with.id %}">@{{ conversation.conversation_with.username }}
+                    <span>{{ conversation.messages.first.body }}</span>
+                </a>
+
+            </div> -->
+            {% endfor %}
+
+
+            {% endif %}
+            
+        </div>
+    </div>
+        
+</div>
