@@ -1,7 +1,53 @@
-<a href="{% url 'home' %}">home</a>
+{% load static %}
+
+<div class="side-menu-navigation grid-item">
+    <div class="side-menu-icon">
+        <p>app icon</p>
+    </div>
+
+    {% comment %} <div class="side-menu-nav"> {% endcomment %}
+    <div class="side-menu-nav-items-list">
+        <div class="nav-item">
+            <img src="{% static 'images/icons/profile.png' %}"
+                alt="profile icon"
+                class="nav-icons">
+        </div>
+        <div class="nav-item">
+            <img src="{% static 'images/icons/messages.png' %}"
+            alt="messages icon"
+            class="nav-icons">
+        </div>
+        <div class="nav-item">
+            <img src="{% static 'images/icons/contact.png' %}"
+                alt="contact-book icon"
+                class="nav-icons">
+        </div>
+        <div class="nav-item">
+            <img src="{% static 'images/icons/bookmark.png' %}"
+                alt="bookmark icon"
+                class="nav-icons">
+        </div>
+        <div class="nav-item">
+            
+        </div>
+    </div>
+    {% comment %} </div> {% endcomment %}
+    <div class="side-menu-profile-settings">
+        <div class="settings">
+            <img src="{% static 'images/icons/settings.png' %}"
+            alt="settings icon"
+            class="nav-icons">
+        </div>
+        <div class="profile-avatar-quick-menu">
+        </div>
+        {% comment %} <a href="{% url 'home' %}">home</a>
+
+        {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">logout</a>
+        {% endif %} {% endcomment %}
+    </div>
+    
+</div>
 
 
-{% if user.is_authenticated %}
-<a href="{% url 'logout' %}">logout</a>
-{% endif %}
-{% block content %}{% endblock content %}
+

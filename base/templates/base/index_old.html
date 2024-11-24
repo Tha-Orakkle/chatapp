@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "nav.html" %}
+<h1>CHATAPP</h1>
+<p>Welcome @{{ request.user.username }}</p> 
+{% if error %}
+<p>{{ error }}</p>
+{% endif %}
+
+<hr>
+{% if conversations %}
+{% for conversation in conversations %}
+<div>
+    <a href="{% url 'chat' conversation.conversation_with.id %}">@{{ conversation.conversation_with.username }}
+        <span>{{ conversation.messages.first.body }}</span>
+    </a>
+
+</div>
+<br>
+{% endfor %}
+{% endif %}
+    
+
+<hr>
+<a href="{% url 'find-users' %}">start new conversation</a>
+
+{% endblock content %}

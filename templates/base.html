@@ -11,13 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
+    {% comment %} <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script> {% endcomment %}
 </head>
 <body class="{% block body_class %}{% endblock body_class %}">
     
     {% block content %}{% endblock content %}
     
     {% block scripts %}{% endblock scripts %}
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>

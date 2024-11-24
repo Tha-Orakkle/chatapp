@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block body_class %}register-login-page{% endblock body_class %}
+
+{% block content %}
+<div class="register-login-container">
+
+    <div class="register-user-profile-content" id="register-user-profile">
+        <div class="register-login-header">
+            <h3>continue regsitration...</h3>
+        </div>
+        <div class="register-user-profile-form">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- <div class="form-item">
+                    <input type="file" name="avatar" id="avatar" accept="image/*">
+                </div>
+                <div class="form-item">
+                    <label for="fullname">Full Name:</label>
+                    <input type="text" name="fullname" id="fullname" placeholder="Alan Poe">
+                </div>
+                <div class="form-item">
+                    <label for="phone_number">Phone no:</label>
+                    <input type="tel" name="phone_number" id="phone_number" >
+                </div>
+                <div class="form-item">
+                    <label for="bio">Bio:</label>
+                    <textarea name="bio" id="bio" cols="40" rows="10"></textarea>
+                </div> -->
+                <div class="form-item">
+                    {{ form.avatar }}
+                    {% if form.avatar.errors %}
+                        <div>
+                            {% for error in form.avatar.errors %}
+                            <p class="errors">* {{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-item">
+                    {{ form.full_name.label_tag }}
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}
+                        <div>
+                            {% for error in form.full_name.errors %}
+                            <p class="errors">* {{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-item">
+                    {{ form.phone_number.label_tag }}
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <div>
+                            {% for error in form.phone_number.errors %}
+                            <p class="errors">* {{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-item">
+                    {{ form.bio.label_tag }}
+                    {{ form.bio }}
+                    {% if form.bio.errors %}
+                        <div>
+                            {% for error in form.bio.errors %}
+                            <p class="errors">* {{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-footer">
+                    <button id="skip">Skip</button>
+                    <input type="submit" value="Continue" id="continue">
+                    <!-- <button id="continue">Continue</button> -->
+                </div>
+
+            </form>
+        </div>
+        
+    </div>
+</div>
+{% endblock content %}
