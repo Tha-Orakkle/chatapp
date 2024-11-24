@@ -1,6 +1,6 @@
 __pycache__/
 */__pycache__/
 */*/__pycache__/
-media/
+media/images/*
 db.sqlite3
 .env
