@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block body_class %}register-login-page{% endblock body_class %}
 
@@ -6,29 +7,15 @@
 <div class="register-login-container">
 
     <div class="register-user-profile-content" id="register-user-profile">
-        <div class="register-login-header">
-            <h3>continue regsitration...</h3>
-        </div>
         <div class="register-user-profile-form">
-            <form action="" method="post" enctype="multipart/form-data">
+            <form action="" method="post" enctype="multipart/form-data" id="user-profile-form">
                 {% csrf_token %}
-                <!-- <div class="form-item">
-                    <input type="file" name="avatar" id="avatar" accept="image/*">
-                </div>
-                <div class="form-item">
-                    <label for="fullname">Full Name:</label>
-                    <input type="text" name="fullname" id="fullname" placeholder="Alan Poe">
-                </div>
-                <div class="form-item">
-                    <label for="phone_number">Phone no:</label>
-                    <input type="tel" name="phone_number" id="phone_number" >
-                </div>
-                <div class="form-item">
-                    <label for="bio">Bio:</label>
-                    <textarea name="bio" id="bio" cols="40" rows="10"></textarea>
-                </div> -->
-                <div class="form-item">
+                <div class="form-avatar avatar-update">
+                    <img src="{{ request.user.profile.avatar.url }}" alt="profile picture" id="avatar">
                     {{ form.avatar }}
+                    <label for="{{ form.avatar.id_for_label }}" class="avatar-label">
+                        <img src="{% static 'images/icons/camera.png' %}" alt="edit profile pic icon" class="edit-profile-picture">
+                    </label>
                     {% if form.avatar.errors %}
                         <div>
                             {% for error in form.avatar.errors %}
@@ -37,7 +24,7 @@
                         </div>
                     {% endif %}
                 </div>
-                <div class="form-item">
+                <div class="form-item full_name">
                     {{ form.full_name.label_tag }}
                     {{ form.full_name }}
                     {% if form.full_name.errors %}
@@ -71,8 +58,8 @@
                     {% endif %}
                 </div>
                 <div class="form-footer">
-                    <button id="skip">Skip</button>
-                    <input type="submit" value="Continue" id="continue">
+                    <button class="btn skip">skip</button>
+                    <input type="submit" value="continue" id="continue" class="btn continue">
                     <!-- <button id="continue">Continue</button> -->
                 </div>
 
@@ -82,3 +69,52 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+    // const fullName = document.querySelector('.form-item.full_name input');
+    const fileInput = document.querySelector('.form-avatar input');
+    const btnContinue =  document.querySelector('.form-footer input');
+    const btnSkip =  document.querySelector('.form-footer .skip');
+    const AvatarDiv = document.querySelector('.avatar-update');
+    const form = document.querySelector('#user-profile-form')
+
+
+    {% comment %} fullName.addEventListener('input', () => {
+        if (fullName.value.trim() !== '') {
+            btnContinue.disabled = false;
+       } else {
+            btnContinue.disabled = true;
+        }
+    ) {% endcomment %}
+    
+{% comment %}     
+    form.addEventListener('submit', (e) => {
+        if (fullName.value.trim() === '') {
+            e.preventDefault();
+            alert(`Please fill out you full name!`)
+        }
+    }) {% endcomment %}
+
+    btnSkip.addEventListener('click', () => {
+        window.location.href = '/';
+    })
+
+    fileInput.addEventListener('change', () => {
+        const avatar = document.getElementById('avatar');
+        console.log(fileInput.files);
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                avatar.remove();
+                img.setAttribute('id', 'avatar');
+                AvatarDiv.prepend(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock scripts %}

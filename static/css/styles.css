@@ -70,11 +70,15 @@ body {
 .register-login-content,
 .register-user-profile-content {
     width: 55%;
-    margin: 0 auto;
+    margin: 50px auto 70px;
 }
 
+/* .register-user-profile-content {
+    margin-bottom: 40px;
+} */
+
 .register-login-header {
-    margin-top: 70px;
+    margin-top: 20px;
     margin-bottom: 50px;
 
     text-align: center;
@@ -92,12 +96,16 @@ label {
     font-size: 14px;
 }
 
+.register-user-profile-content .form-item,
 .register-login-content .form-item,
 .register-login-content .form-submit {
     margin-bottom: 20px;
     margin-top: 10px;
 }
-.register-login-content input:not([type='file']) {
+
+.register-login-content input,
+.register-user-profile-content textarea,
+.register-user-profile-content .form-item input {
     font-family: inherit;
     width: 100%;
     border-radius: 5px;
@@ -106,7 +114,8 @@ label {
 
 }
 
-.register-login-content input:not([type='submit']):not([type='file']){
+.form-item input:not([type='submit']),
+.form-item textarea {
     border: 1px solid #cacaca;
 }
 
@@ -115,6 +124,7 @@ label {
     background-color: #6a2dda;
     color: #fff;
     border: none;
+    cursor: pointer;
 }
 
 
@@ -175,14 +185,61 @@ label {
 
 .create-signin {
     text-align: center;
-    margin-bottom: 70px;
+    /* margin-bottom: 70px; */
 }
 .create-signin a {
     color: #333;
 }
 
-
 /* ---------LOGIN AND REGISTRATION STYLE END ------------- */
+
+/* ---------USER PROFILE REGISTRATION STYLE START ------------- */
+.form-avatar {
+    height: 120px;
+    width: 120px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    margin: 0 auto;
+    position: relative;
+}
+.form-avatar > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: inherit;
+}
+
+.avatar-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.avatar-label {
+    position: absolute;
+    right: -5px;
+    bottom: -5px;
+    width: 40px;
+    height: 40px;
+    background-color: #0084ff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar-label .edit-profile-picture {
+    height: 25px;
+    width: 25px;
+}
+
+.register-user-profile-form textarea {
+    resize: none;
+}
+
+/* ---------USER PROFILE REGISTRATION STYLE END ------------- */
 
 
 
@@ -547,8 +604,49 @@ label {
 
 
 /* ----TEST--- */
-/* #register-user {
-    display: none;
+.form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.btn {
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.btn.skip {
+    background: none;
+    color: #0084ff;
+    transition: font 0.3s ease, transform 0.2s ease;
+}
+.btn.skip:hover {
+    color: #0056b3;
+    font-weight: bold;
+    transform: scale(1.07);
+}
+
+.btn.continue {
+    border-radius: 5px;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #0084ff;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+
+
+/* .btn.continue:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    pointer-events: none;
 } */
 
-
+.btn.continue:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
