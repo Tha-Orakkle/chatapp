@@ -27,25 +27,25 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ['avatar', 'full_name', 'phone_number', 'bio']
         widgets = {
-            'full_name': forms.TextInput(attrs={'placeholder': 'Alan Poe'}),
+            'full_name': forms.TextInput(attrs={'placeholder': 'e.g. Alan Poe', 'required': 'required'}),
             'phone_number': forms.TextInput(attrs={'placeholder': '+2348120001234 or 08120001234 (for NG)'}),
             'bio': forms.Textarea(attrs={
                 'placeholder': 'say something about yourself. Please keep it short, save the full digest for chats.', 
-                'rows': "10", "cols": "40"}),
-            'avatar': forms.FileInput(attrs={'accept': 'image/*'})
+                'rows': "4"}),
+            'avatar': forms.FileInput(attrs={'accept': 'image/*', 'class': 'avatar-input'})
         }
         
     def clean_phone_number(self):
         phone = self.cleaned_data.get('phone_number')
-        if not phone:
-            return
-        try:
-            parsed_number = parse(str(phone), None)
-            
-            if not is_valid_number(parsed_number):
-                raise forms.ValidationError("The phone number is not valid.")
-        except NumberParseException:
-            raise forms.ValidationError("Invalid phone number format")
+        if phone:
+            try:
+                parsed_number = parse(str(phone), None)
+                
+                if not is_valid_number(parsed_number):
+                    raise forms.ValidationError("The phone number is not valid.")
+            except NumberParseException:
+                raise forms.ValidationError("Invalid phone number format")
+        return phone
         
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')

@@ -52,7 +52,7 @@ def register_user_profile(request):
         context.update({'form': form})
         return render(request, 'base/register_user_profile.html', context)
         
-    context['form'] = UserProfileForm()
+    context['form'] = UserProfileForm(instance=request.user.profile)
     return render(request, 'base/register_user_profile.html', context)
 
 
