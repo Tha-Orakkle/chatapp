@@ -11,7 +11,7 @@
             <form action="" method="post" enctype="multipart/form-data" id="user-profile-form">
                 {% csrf_token %}
                 <div class="form-avatar avatar-update">
-                    <img src="{{ request.user.profile.avatar.url }}" alt="profile picture" id="avatar">
+                    <img src="{{ request.user.profile.avatar.url }}" alt="profile picture" class="avatar" id="form-avatar">
                     {{ form.avatar }}
                     <label for="{{ form.avatar.id_for_label }}" class="avatar-label">
                         <img src="{% static 'images/icons/camera.png' %}" alt="edit profile pic icon" class="edit-profile-picture">
@@ -101,7 +101,7 @@
     })
 
     fileInput.addEventListener('change', () => {
-        const avatar = document.getElementById('avatar');
+        const avatar = document.getElementById('form-avatar');
         console.log(fileInput.files);
         const file = fileInput.files[0];
         if (file) {
@@ -110,7 +110,8 @@
                 const img = document.createElement('img');
                 img.src = e.target.result;
                 avatar.remove();
-                img.setAttribute('id', 'avatar');
+                img.setAttribute('class', 'avatar');
+                img.setAttribute('id', 'form-avatar')
                 AvatarDiv.prepend(img);
             };
             reader.readAsDataURL(file);

@@ -44,6 +44,8 @@ def register(request):
 def register_user_profile(request):
     context = {'title': 'User Profile'}
     if request.method == 'POST':
+        print(request.FILES)
+        print(request.POST)
         form = UserProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if form.is_valid():
             form.save()
