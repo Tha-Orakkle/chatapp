@@ -1,0 +1,78 @@
+{% load static %}
+
+<div class="contacts-section section">
+    <div class="contact-header">
+        <h2>Contacts</h2>
+        <div class="search-container">
+            <input type="text" placeholder="Search..." class="search-input">
+            <img src="{% static 'images/icons/search.png' %}" alt="search icon" class="search-icon">
+        </div>
+    </div>
+
+    <div class="contacts">
+        {% if request.user.following.all %}
+        {% for following in request.user.following.all %}
+        <div class="contact">
+            <div class="contact-avatar">
+                <img src="{{ following.profile.avatar.url }}" class="avatar">
+            </div>
+            <div class="contact-name" user_id="{{ following.id }}">
+                {% if following.profile.full_name %}
+                <p >{{ following.profile.full_name }}</p>
+                {% else %}
+                <p>{{ following.username }}</p>
+                {% endif %}
+            </div>
+            <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="start-new-convo">
+            <img src="{% static 'images/icons/plus.png' %}"
+                alt="plus icon to start new conversation"
+                class="start-new-convo-icon">
+        </div>
+    </div>
+
+</div>
+
+{% block scripts %}
+<script>
+    
+    /*
+     * Variables
+     */
+    let currentChatSocket = null;
+    const contacts = document.querySelectorAll('.contact-name');
+    const url_prefix = `ws://${window.location.host}/ws/chat/`;
+
+    
+    /*
+     * Functions
+     */
+
+    function openWebSocket(user_id) {
+        if (currentChatSocket) {
+            currentChatSocket.close();
+        }
+        const url = url_prefix + `${user_id}/`
+        currentChatSocket = new WebSocket(url);
+        
+        currentChatSocket.onopen = function(e) {
+            console.log("connection established")
+        }
+    
+    }
+
+    /*
+     * Event Listeners
+     */
+    contacts.forEach(contact => {
+        contact.addEventListener('click', () => {
+            contact_id = contact.getAttribute('user_id');
+            openWebSocket(contact_id);
+            
+        });
+    })
+</script>
+{% endblock scripts %}

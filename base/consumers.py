@@ -7,8 +7,11 @@ from .models import Conversation, Message
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['chat_room']
-        self.room_group_name = f"chat_{self.room_name}"
+        self.user = self.scope['user']
+        other_user_id = self.scope['url_route']['kwargs']['user_id']
+        chat_room_name = "_".join(sorted([str(self.user.id), other_user_id]))
+        self.room_group_name = f"chat_{chat_room_name}"
+        print(self.room_group_name)
         await self.channel_layer.group_add(
             self.room_group_name, self.channel_name)
         await self.accept()
