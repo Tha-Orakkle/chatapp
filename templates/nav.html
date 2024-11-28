@@ -7,29 +7,28 @@
     {% comment %} <div class="side-menu-nav"> {% endcomment %}
     {% comment %} <div class="side-menu-nav-items-list"> {% endcomment %}
     <div class="nav-item">
-        <div class="nav">
+        <div class="nav profile-nav">
             <img src="{% static 'images/icons/profile.png' %}"
                 alt="profile icon"
                 class="nav-icon">
         </div>
     </div>
     <div class="nav-item">
-        <div class="nav selected">
-        
+        <div class="nav selected" id="messages-nav">
             <img src="{% static 'images/icons/messages.png' %}"
             alt="messages icon"
             class="nav-icon">
         </div>
     </div>
     <div class="nav-item">
-        <div class="nav">
+        <div class="nav" id="contact-nav">
             <img src="{% static 'images/icons/contact.png' %}"
                 alt="contact-book icon"
                 class="nav-icon">
         </div>
     </div>
     <div class="nav-item bookmark">
-        <div class="nav">
+        <div class="nav" id="bookmark-nav">
             <img src="{% static 'images/icons/bookmark.png' %}"
             alt="bookmark icon"
             class="nav-icon">
@@ -37,8 +36,7 @@
     </div>
 
     <div class="nav-item">
-        <div class="nav">
-        
+        <div class="nav" id="settings-nav">
             <img src="{% static 'images/icons/settings.png' %}"
             alt="settings icon"
             class="nav-icon">

@@ -1,0 +1,34 @@
+{% load static %}
+
+<div class="user-search">
+    <div user-search-container>
+        <div class="user-search-container">
+            <h3>People</h3>
+            <img src="" alt=""> <!-- X icon -->
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="Search..." class="search-input">
+            <img src="{% static 'images/icons/search.png' %}" alt="search icon" class="search-icon">
+        </div>
+        {% if request.user.following.all %}
+        <h3>Following</h3>
+        {% for following in request.following.all %}
+        <div class="user">
+            <div class="user-avatar">
+                <img src="{{ following.profile.avatar.url }}" class="avatar">
+            </div>
+            <div>
+                {% if following.profile.full_name %}
+                <p>{{ following.profile.full_name }}</p>
+                {% else %}
+                <p>{{ following.username }}</p>
+                {% endif %}
+                <p>@{{ following.username }}</p>
+            </div>
+            <button class='follow-btn' data-following="true" user-id="{{ user.id }}">Unfollow</button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+    </div>
+</div>

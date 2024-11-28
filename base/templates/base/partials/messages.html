@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="messages-section">
+<div class="messages-section section">
     <div class="messages-header">
         <h2>Messages <span>(message count)</span></h2>
         <div class="search-container">
@@ -74,7 +74,9 @@
             {% if conversations %}
             {% for conversation in conversations %}
             <div class="conversation">
-                <div class="conversation-avatar conversation-item"></div>
+                <div class="conversation-avatar conversation-item">
+                    
+                </div>
                 <div class="conversation-info conversation-item">
                     <p class="conversation-with">{{ conversation.conversation_with.username }}</p>
                     <p>{{ conversation.messages.first.body }}</p>
