@@ -1,6 +1,7 @@
 """Helper Functions"""
 from chatapp.settings import MEDIA_ROOT
 import os
+import glob
 
 
 def user_upload_image_path(instance, filename):
@@ -8,6 +9,8 @@ def user_upload_image_path(instance, filename):
     ext = os.path.splitext(filename)[1]
     _filename = f"images/user_{instance.user.id}{ext}"
     full_path = os.path.join(MEDIA_ROOT, _filename)
-    if os.path.isfile(full_path):
-        os.remove(full_path)
+    files = glob.glob(os.path.splitext(full_path)[0] + "*")
+    for file in files:
+        if os.path.isfile(file):
+            os.remove(file)
     return _filename
