@@ -2,11 +2,14 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+import requests
 
 from .forms import MyUserCreationForm, UserProfileForm
 from .models import User, UserProfile, Conversation, Message
 
-# Create your views here.
+API_BASE_URL = "http://127.0.0.1:8000/api/v1/"
+
+
 @login_required
 def index(request):
     context = {
@@ -31,7 +34,14 @@ def register(request):
             user.save()
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
-            return redirect('register-user-profile')
+            response = redirect('register-user-profile')
+            url = API_BASE_URL + 'token/'
+            res = requests.post(url, json={'user_id': str(user.id)})
+            if res.status_code == 200:
+                token = res.json()
+                response.set_cookie('token', token['token'], httponly=True, secure=True, max_age=86400)
+            return response
+            # return redirect('register-user-profile')
         
         context.update({'form': form})
         return render(request, 'base/register.html', context)
@@ -44,8 +54,6 @@ def register(request):
 def register_user_profile(request):
     context = {'title': 'User Profile'}
     if request.method == 'POST':
-        print(request.FILES)
-        print(request.POST)
         form = UserProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if form.is_valid():
             form.save()
@@ -69,15 +77,24 @@ def login_user(request):
         if not user:
             messages.error(request, "Invalid login credentials")
             return redirect('login')
+        
         login(request, user)
-        return redirect('home')
+        response = redirect('home')
+        url = API_BASE_URL + 'token/'
+        res = requests.post(url, json={'user_id': str(user.id)})
+        if res.status_code == 200:
+            token = res.json()
+            response.set_cookie('token', token['token'], httponly=True, secure=True, max_age=86400)
+        return response
     context = {'title': 'Login'}
     return render(request, 'base/login.html', context)
 
 
 def logout_user(request):
     logout(request)
-    return redirect('login')
+    response = redirect('login')
+    response.delete_cookie('token')
+    return response
 
 # this will be refactored to be a search result
 @login_required

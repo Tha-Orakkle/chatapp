@@ -43,6 +43,7 @@
      * Variables
      */
     let currentChatSocket = null;
+    const API_BASE_URL = `http://${window.location.host}/api/v1/`;
     const contacts = document.querySelectorAll('.contact-name');
     const url_prefix = `ws://${window.location.host}/ws/chat/`;
 
@@ -50,6 +51,22 @@
     /*
      * Functions
      */
+
+    async function fetch_conversation_history(user_id) {
+        const url = API_BASE_URL + `conversation/${user_id}/`;
+        await fetch(url, {
+            'method': 'GET',
+            'credentials': 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.log(`{Error: ${error}}`)
+        })
+    }
+
 
     function openWebSocket(user_id) {
         if (currentChatSocket) {
@@ -59,7 +76,7 @@
         currentChatSocket = new WebSocket(url);
         
         currentChatSocket.onopen = function(e) {
-            console.log("connection established")
+            console.log("connection established");
         }
     
     }
@@ -71,7 +88,8 @@
         contact.addEventListener('click', () => {
             contact_id = contact.getAttribute('user_id');
             openWebSocket(contact_id);
-            
+            fetch_conversation_history(contact_id);
+     
         });
     })
 </script>

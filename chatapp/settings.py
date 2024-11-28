@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     
     'phonenumber_field',
     'social_django',
+    'rest_framework',
+    'rest_framework.authtoken',
     
     # my apps
     'base',
@@ -168,3 +170,15 @@ SOCIAL_AUTH_GITHUB_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
 # phonenumber field custom default settings 
 PHONENUMBER_DEFAULT_REGION = 'NG' #for Nigeria
 PHONENUMBER_DEFAULT_FORMAT = 'INTERNATIONAL'
+
+
+# restframework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'base.backends.authenticate.ExpiredTokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}

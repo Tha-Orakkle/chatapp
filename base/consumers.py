@@ -2,7 +2,7 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
-from .models import Conversation, Message
+from .models import Conversation, Message, User
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -10,8 +10,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.user = self.scope['user']
         other_user_id = self.scope['url_route']['kwargs']['user_id']
         chat_room_name = "_".join(sorted([str(self.user.id), other_user_id]))
+
+        self.other_user = await self.get_other_user(other_user_id)        
         self.room_group_name = f"chat_{chat_room_name}"
-        print(self.room_group_name)
+        self.conversation = await self.get_conversation()
+        
         await self.channel_layer.group_add(
             self.room_group_name, self.channel_name)
         await self.accept()
@@ -64,3 +67,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message': event['message'].body,
             'sender_id': str(event['message'].sender.id),
         }))
+
+
+    @sync_to_async
+    def get_conversation(self):
+        conversation, created = self.user.conversations.get_or_create(
+            user=self.user,
+            conversation_with=self.other_user,
+        )
+        return conversation
+    
+    @sync_to_async
+    def get_other_user(self, conversation_with_id):
+        return User.objects.get(id=conversation_with_id)
+            
+            
