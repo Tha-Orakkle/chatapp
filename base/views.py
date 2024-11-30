@@ -84,7 +84,7 @@ def login_user(request):
         res = requests.post(url, json={'user_id': str(user.id)})
         if res.status_code == 200:
             token = res.json()
-            response.set_cookie('token', token['token'], httponly=True, secure=True, max_age=86400)
+            response.set_cookie('token', token['token'], httponly=True, samesite='Lax', max_age=86400)
         return response
     context = {'title': 'Login'}
     return render(request, 'base/login.html', context)

@@ -23,5 +23,5 @@ class TokenGenerationView(APIView):
             token.delete()
             token = Token.objects.create(user=user)
         response =  Response({'token': token.key}, status=status.HTTP_200_OK)
-        response.set_cookie('token', token.key, httponly=True, secure=True, max_age=86400)
+        response.set_cookie('token', token.key, httponly=True, samesite='Lax', max_age=86400)
         return response

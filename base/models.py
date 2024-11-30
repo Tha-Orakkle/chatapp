@@ -113,7 +113,7 @@ class Message(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"<Message> {self.body if len(self.body) < 50 else self.body[:50]}"

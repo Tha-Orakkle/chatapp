@@ -8,6 +8,7 @@ from rest_framework.exceptions import AuthenticationFailed
 
 class ExpiredTokenAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key):
+        print("===authentication=====")
         try:
             token = Token.objects.get(key=key)
         except Token.DoesNotExist:
@@ -15,4 +16,5 @@ class ExpiredTokenAuthentication(TokenAuthentication):
         current_time = timezone.now()
         if token.created < current_time - timedelta(hours=12):
             raise AuthenticationFailed("Token Expired")
+        print(token, token.user, token.key)
         return token.user, token

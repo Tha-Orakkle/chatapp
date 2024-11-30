@@ -11,6 +11,10 @@ body {
     font-style: normal;
 }
 
+.hidden {
+    display: none;
+}
+
 .scroll-container::-webkit-scrollbar {
     width: 2px;
 }
@@ -291,6 +295,7 @@ label {
     height: 100vh;
     max-height: 100vh;
     min-height: 400px;
+    width: 100%;
     position: fixed;
     top: 0;
     left: 0;

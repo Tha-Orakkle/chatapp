@@ -1,10 +1,10 @@
 {% load static %}
 
-<div class="chat-box-container grid-item">
+<div class="chat-box-container grid-item" id="chat-box-container">
   <div class="chat-box-top-bar">
     <div class="chat-box-avatar"></div>
     <div class="chat-box-profile-info">
-      <p class="chat-box-username">Username</p>
+      <p id="chat-box-username">Username</p>
       <p class="status">online</p>
     </div>
     <img
@@ -103,4 +103,7 @@
         class="send-icon" />
     </button>
   </div>
+  <script id="conversation"></script> 
+  <script id="account_user"></script> 
+  <script id="conversation_with"></script> 
 </div>
