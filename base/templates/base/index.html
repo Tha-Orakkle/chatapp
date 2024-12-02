@@ -22,4 +22,9 @@
 
 {% block scripts %}
 <script src="{% static 'js/main.js' %}"></script>
+<script>
+    (async function() {
+        await get_token();
+    })(); 
+</script>
 {% endblock scripts %}

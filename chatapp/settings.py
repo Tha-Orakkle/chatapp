@@ -175,7 +175,7 @@ PHONENUMBER_DEFAULT_FORMAT = 'INTERNATIONAL'
 # restframework settings
 # REST_FRAMEWORK = {
 #     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'base.backends.authenticate.ExpiredTokenAuthentication',
+#         'base.backends.authenticate.UserTokenAuthentication',
 #         'rest_framework.authentication.TokenAuthentication',
 #     ],
 #     'DEFAULT_PERMISSION_CLASSES': [

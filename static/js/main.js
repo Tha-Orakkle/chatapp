@@ -11,13 +11,6 @@ scrollContainers.forEach(scrollContainer => {
 });
 
 
-// const startConvo = document.querySelector('.start-new-convo');
-// const userSearch = document.querySelector('.user-search');
-
-// startConvo.addEventListener('click', () => {
-//     userSearch.style.display = ' block';
-// });
-
 const contactNav = document.getElementById('contact-nav');
 const sections = document.querySelectorAll('.section');
 
@@ -33,8 +26,6 @@ contactNav.addEventListener('click', () => {
     contactSection.style.display = '';
 })
 
-
-
 /*
 * Variables
 */
@@ -46,17 +37,54 @@ const chat_other_username = document.getElementById('chat-box-username');
 const chatlog = document.querySelector('.chat-log');
 const chat_submit_button = document.querySelector('.chat-box-input button');
 const user_message_input = document.getElementById('user-message-input');
-// const chat_container = document.getElementById('chat-box-container');
 
 // hidden elements with necessary IDs
-const conversation_with = document.getElementById('conversation_with');
 const conversation = document.getElementById('conversation');
+const conversation_with = document.getElementById('conversation_with');
 
 
 
 /*
 * Functions
 */
+
+function scroll_to_bottom() {
+    chatlog.scrollTop = chatlog.scrollHeight;
+}
+
+function getCookie(name) {
+    let cookie_value = null;
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [n, v] = cookie.split('=');
+        if (n === name) {
+            cookie_value = decodeURIComponent(v.trim());
+        }
+    }
+    return cookie_value;
+}
+
+
+async function get_token() {
+    console.log(`=========fetching new token===========`)
+    const url = API_BASE_URL + `token/`;
+    try {
+        const response = await fetch(url, {
+            'method': 'GET',
+            'credentials': 'same-origin',
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || "An error occurred!")
+        }
+        console.log(`=========token fetched===========`)
+
+        return data;
+
+    } catch (error) {
+        console.error(error.message)
+    }
+}
 
 function extract_messages_html(message) {
     const chat_message_div = document.createElement('div');
@@ -85,20 +113,27 @@ function extract_messages_html(message) {
 
 async function fetch_conversation_history(conversation_id) {
     const url = API_BASE_URL + `conversations/${conversation_id}/`;
-    await fetch(url)
-    .then(response => response.json())
-    .then(data => {
-        chatlog.textContent = '';
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || `An error occurred`);
+        }
         console.log(data);
+        chatlog.textContent = '';
         chat_other_username.textContent = data.conversation.conversation_with.username;
         for (let msg of data.messages) {
             message = extract_messages_html(msg);
             chatlog.prepend(message);
         }
-    })
-    .catch(error => {
-        console.log(`{${error}}`)
-    })
+        scroll_to_bottom();
+
+    } catch (error) {
+        console.error(`API Error: ${error.message}`)
+        await get_token();
+        console.log("==========re-initiating API request============")
+        fetch_conversation_history(conversation_id);
+    }
 }
 
 
@@ -143,6 +178,8 @@ function openWebSocket(uid, callback) {
             
             new_message_div.innerHTML = html;
             chatlog.append(new_message_div);
+            scroll_to_bottom();
+
         }
     }
 
@@ -175,11 +212,11 @@ contacts.forEach(contact => {
 })
 
 chat_submit_button.onclick = function (e) {
-    send_message();
+    if (user_message_input.value !== '') send_message();
 }
 
 user_message_input.onkeyup = function (e) {
     if (e.keyCode === 13) {
-        send_message();
+        if (user_message_input.value !== '') send_message();
     }
 }

@@ -34,14 +34,7 @@ def register(request):
             user.save()
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
-            response = redirect('register-user-profile')
-            url = API_BASE_URL + 'token/'
-            res = requests.post(url, json={'user_id': str(user.id)})
-            if res.status_code == 200:
-                token = res.json()
-                response.set_cookie('token', token['token'], httponly=True, secure=True, max_age=86400)
-            return response
-            # return redirect('register-user-profile')
+            return redirect('register-user-profile')
         
         context.update({'form': form})
         return render(request, 'base/register.html', context)
@@ -79,13 +72,8 @@ def login_user(request):
             return redirect('login')
         
         login(request, user)
-        response = redirect('home')
-        url = API_BASE_URL + 'token/'
-        res = requests.post(url, json={'user_id': str(user.id)})
-        if res.status_code == 200:
-            token = res.json()
-            response.set_cookie('token', token['token'], httponly=True, samesite='Lax', max_age=86400)
-        return response
+        return redirect('home')
+
     context = {'title': 'Login'}
     return render(request, 'base/login.html', context)
 
@@ -93,7 +81,7 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     response = redirect('login')
-    response.delete_cookie('token')
+    response.delete_cookie('auth_token')
     return response
 
 # this will be refactored to be a search result
