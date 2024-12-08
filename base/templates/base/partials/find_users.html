@@ -1,0 +1,24 @@
+{% load static %}
+
+<div class="new-users-section content">
+    <div class="header">
+        <h3>People</h3>
+        <span class="close">&times;</span>
+    </div>
+    <div class="user-search-container">
+        <div class="search-container">
+            <input type="text" placeholder="Search..." class="search-input">
+            <img src="{% static 'images/icons/search.png' %}" alt="search icon" class="search-icon">
+        </div>
+    </div>
+
+    <div class="new-users-list scroll-container">
+        <div class="user list-item">
+            <div class="user-avatar">
+                <img src="/media/default/default.png" alt="" class="avatar">
+            </div>
+            <p>Full Name</p>
+            <button class='follow-btn' data-following="true" user-id="{{ user.id }}">Unfollow</button>
+        </div>
+    </div>
+</div>

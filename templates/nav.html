@@ -1,13 +1,12 @@
 {% load static %}
 
-<div class="side-menu-navigation">
+<div class="side-menu-navigation content">
     <div class="nav-item side-menu-chat-logo">
         <p>app icon</p>
     </div>
-    {% comment %} <div class="side-menu-nav"> {% endcomment %}
-    {% comment %} <div class="side-menu-nav-items-list"> {% endcomment %}
+    
     <div class="nav-item">
-        <div class="nav profile-nav">
+        <div class="nav" id="profile-nav">
             <img src="{% static 'images/icons/profile.png' %}"
                 alt="profile icon"
                 class="nav-icon">
@@ -27,7 +26,7 @@
                 class="nav-icon">
         </div>
     </div>
-    <div class="nav-item bookmark">
+    <div class="nav-item">
         <div class="nav" id="bookmark-nav">
             <img src="{% static 'images/icons/bookmark.png' %}"
             alt="bookmark icon"
@@ -46,19 +45,11 @@
         <div class="profile-avatar-quick-menu">
             <img src="{{ request.user.profile.avatar.url }}" alt="" class="avatar">
         </div>
+        <div class="popup profile-popup">
+                <p>Profile</p>
+                <a href="{% url 'logout' %}">logout</a>
+                <!-- <li>Profile</li> -->
+        </div>
     </div>
-    {% comment %} </div> {% endcomment %}
-    {% comment %} </div> {% endcomment %}
-    {% comment %} <div class="side-menu-profile-settings"> {% endcomment %}
-        
-        {% comment %} <a href="{% url 'home' %}">home</a>
-
-        {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">logout</a>
-        {% endif %} {% endcomment %}
-    {% comment %} </div> {% endcomment %}
     
 </div>
-
-
-

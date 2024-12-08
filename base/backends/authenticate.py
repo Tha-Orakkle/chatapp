@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import APIException
 
 from base.models import User
+from base.api.v1.errors import AuthFailed
 
 
 class UserTokenAuthentication(BaseAuthentication):
@@ -18,9 +19,9 @@ class UserTokenAuthentication(BaseAuthentication):
         try:
             user, token = self.validate_token(token_key)
         except Exception as e:
-            raise APIException(f"Token Validation Failed: {str(e)}")
+            raise AuthFailed(f"Token Validation Failed: {str(e)}", status_code=status.HTTP_401_UNAUTHORIZED)
         if not user or not token:
-            raise APIException("Invalid Token or user not found")
+            raise AuthFailed("Invalid Token or user not found", status_code=status.HTTP_401_UNAUTHORIZED)
         return (user, token)
         
     
@@ -29,9 +30,9 @@ class UserTokenAuthentication(BaseAuthentication):
             token = Token.objects.get(key=token_key)
             user = User.objects.get(auth_token=token)
         except (Token.DoesNotExist, User.DoesNotExist) as e:
-            raise APIException(f"{str(e)}")
+            raise AuthFailed(f"{str(e)}", status_code=status.HTTP_401_UNAUTHORIZED)
 
         current_time = timezone.now()
         if token.created < current_time - timedelta(minutes=1):
-            raise APIException("Token Expired")
+            raise AuthFailed("Token Expired", status_code=status.HTTP_401_UNAUTHORIZED)
         return (user, token)

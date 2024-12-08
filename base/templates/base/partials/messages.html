@@ -10,7 +10,7 @@
     </div>
     
 
-    <div class="all-conversations scroll-container" id="scroll-container">
+    <div class="all-conversations scroll-container">
 
         <div class="favorite-conversations">
             <h6 class="favorites-header">FAVORITES</h6>
@@ -53,7 +53,7 @@
         <div class="open-conversations-list">
             <div class="open-conversation-header-wrapper">
                 <h6 class="open-conversation-header">DIRECT MESSAGES</h6>
-                <button class="start-new-convo">
+                <button class="btn-add start-new-convo">
                     <img src="{% static 'images/icons/plus.png' %}"
                         alt="plus icon to start new conversation"
                         class="start-new-convo-icon">
@@ -86,12 +86,6 @@
                 </div>
                 <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
             </div>
-            <!-- <div class="open-conversation">
-                <a href="{% url 'chat' conversation.conversation_with.id %}">@{{ conversation.conversation_with.username }}
-                    <span>{{ conversation.messages.first.body }}</span>
-                </a>
-
-            </div> -->
             {% endfor %}
 
 

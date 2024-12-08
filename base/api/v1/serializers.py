@@ -1,18 +1,26 @@
 from rest_framework import serializers
 
-from base.models import Conversation, Message, User
+from base.models import Conversation, Message, User, UserProfile
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    avatar = serializers.SerializerMethodField() # allows for custom method fpor the field
+
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'full_name', 'avatar']
+        
+        
+    def get_avatar(self, obj):
+        """ returns the avatar url """
+        return obj.avatar.url
+    
 
 class UserSerializer(serializers.ModelSerializer):
-    full_name = serializers.SerializerMethodField()
+    profile = UserProfileSerializer(read_only=True)
     
     class Meta:
         model = User
-        fields = ['id', 'username',  'email', 'full_name']
-
-    def get_full_name(self, obj):
-        full_name = obj.profile.full_name
-        return full_name
+        fields = ['id', 'username',  'email', 'profile']
 
 
 class ConversationSerializer(serializers.ModelSerializer):
@@ -21,7 +29,7 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Conversation
-        fields = ['id', 'user', 'conversation_with'] # expecting an error for UserSerialization
+        fields = ['id', 'user', 'conversation_with']
 
 class MessageSerializer(serializers.ModelSerializer):
     

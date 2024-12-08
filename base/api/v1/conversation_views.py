@@ -18,8 +18,8 @@ class ConversationView(APIView):
         try:
             conversation = request.user.conversations.get(id=conversation_id)
         except Conversation.DoesNotExist as e:
-            raise APIException(detail=e)
-            # return Response({'detail': 'Invalid conversation id'}, status=status.HTTP_400_BAD_REQUEST)
+            # raise APIException(detail=e)
+            return Response({'detail': 'Invalid conversation id'}, status=status.HTTP_400_BAD_REQUEST)
         messages = conversation.messages.all()
         convo_serializer = ConversationSerializer(conversation)
         msg_serializer = MessageSerializer(messages, many=True)
