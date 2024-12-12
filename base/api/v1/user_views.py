@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination as PNP
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -16,14 +17,18 @@ class UsersView(APIView):
     
     def get(self, request):
         """ Return a list of users """
-        users = User.objects.exclude(id=request.user.id).order_by('username')
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
-    
+        queryset = User.objects.exclude(id=request.user.id).order_by('username')
+        paginator = PNP()
+        paginator.page_size = 5
+        print(request)
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+        serializer = UserSerializer(paginated_queryset, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
 
 class FollowingView(APIView):
     """ Returns a list that contains the ID
-    of all followers of a user """
+    of all users followed by a user """
     authentication_classes = [UserTokenAuthentication]
     permission_classes = [IsAuthenticated]
     

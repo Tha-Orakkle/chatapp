@@ -8,8 +8,12 @@
             <img src="{% static 'images/icons/search.png' %}" alt="search icon" class="search-icon">
         </div>
     </div>
-
-    <div class="contacts">
+    <div class="btn-add find-new-user">
+        <img src="{% static 'images/icons/plus.png' %}"
+            alt="plus icon to start new conversation"
+            class="start-new-convo-icon">
+    </div>
+    <div class="contacts scroll-container">
         {% if request.user.following.all %}
         {% for following in request.user.following.all %}
         <div class="contact">
@@ -27,11 +31,7 @@
         </div>
         {% endfor %}
         {% endif %}
-        <div class="btn-add find-new-user">
-            <img src="{% static 'images/icons/plus.png' %}"
-                alt="plus icon to start new conversation"
-                class="start-new-convo-icon">
-        </div>
+      
     </div>
 
 </div>

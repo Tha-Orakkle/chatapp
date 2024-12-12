@@ -2,6 +2,7 @@
 * Variables
 */
 let currentChatSocket = null;
+let following_ids = null;
 const chatapp_main_wrapper = document.querySelector('.chatapp-main-wrapper');
 const API_BASE_URL = `http://${window.location.host}/api/v1/`;
 const contacts = document.querySelectorAll('.contact-name');
@@ -207,10 +208,24 @@ function send_message() {
 
 }
 
+function remove_temp_nav() {
+    const temp_nav = document.querySelector('.temp-nav');
+    if (temp_nav) {
+        temp_nav.remove();
+    }
+}
 
-function update_users_list(users, following_ids) {
-    const new_users_list = document.querySelector('.new-users-list');
-    new_users_list.textContent = '';
+function add_temp_nav(next_url) {
+    const temp_nav_div = document.createElement('div');
+    temp_nav_div.classList.add('temp-nav');
+    temp_nav_div.innerHTML = `
+        <div class="temp-nav-next" next-url="${next_url}">&#43;</div>
+    `;
+    new_users_list.appendChild(temp_nav_div);
+}
+
+
+function update_users_list(users) {
     for (let user of users) {
         const user_div = document.createElement('div');
         user_div.classList.add('user', 'list-item');
@@ -221,7 +236,6 @@ function update_users_list(users, following_ids) {
             </div>
             <p>${user.profile.full_name || user.username}</p>
         `;
-        console.log("USER ID", user.id);
         if (following_ids.includes(user.id)) {
             html_temp = `<button class='follow-btn' data-following="true" user-id="${user.id}">Unfollow</button>`;
         } else {
@@ -256,8 +270,8 @@ async function get_users() {
     let response = null;
     
     try {
-        following_data = await get_following();
-        if (!following_data) {
+        following_ids = await get_following();
+        if (!following_ids) {
             throw new Error(`Could not retrieve user's following`);
         }
         response = await fetch(url, {'credentials': 'same-origin'})
@@ -266,7 +280,10 @@ async function get_users() {
             throw new Error(data.detail || 'An error occured');
         }
         console.log(data);
-        update_users_list(data, following_data);
+        new_users_list.textContent = '';
+        remove_temp_nav();
+        update_users_list(data.results);
+        if (data.next) add_temp_nav(data.next);
     } catch (error) {
         console.error(error.message);
         if (error.message === `Could not retrieve user's following` || (response && response.status === 401)) {
@@ -276,55 +293,27 @@ async function get_users() {
     }
 }
 
-/*
-* Event Listeners
-*/
-contacts.forEach(contact => {
-    contact.addEventListener('click', () => {
-        uid = contact.getAttribute('user_id');
-        conversation_with.setAttribute('data', uid)
-
-        openWebSocket(uid, (conversation_id) => {
-            fetch_conversation_history(conversation_id);
-        });
-
-    });
-})
-
-chat_submit_button.onclick = function (e) {
-    if (user_message_input.value !== '') send_message();
-}
-
-user_message_input.onkeyup = function (e) {
-    if (e.keyCode === 13) {
-        if (user_message_input.value !== '') send_message();
+async function get_next_users(next_url) {
+    let response = null;
+    try {
+        response = await fetch(next_url, {'credentials': 'same-origin'});
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || 'An error occurred');
+        }
+        console.log(data);
+        remove_temp_nav();
+        update_users_list(data.results);
+        if(data.next) add_temp_nav(data.next);
+    } catch(error) {
+        console.error(error);
+        if (response && response.status == 401) {
+            get_token();
+            get_next_users();
+        }
     }
 }
 
-
-start_new_convo.addEventListener('click', () => {
-    const contactSection = document.querySelector('.contacts-section');
-    const selectedNav = document.querySelector('.selected');
-    selectedNav.classList.remove('selected');
-    contactNav.classList.add('selected');
-    sections.forEach(section => {
-        section.style.display = 'none';
-    });
-    contactSection.style.display = 'grid';
-});
-
-find_new_user.addEventListener('click', () => {
-    chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 2fr 1fr';
-    new_users_section.style.display = 'grid';
-
-    get_users();
-
-});
-
-close.addEventListener('click', () => {
-    new_users_section.style.display = 'none';
-    chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 3fr';
-});
 
 async function follow_or_unfollow(btn) {
     const user_to_follow_id = btn.getAttribute('user-id');
@@ -355,16 +344,67 @@ async function follow_or_unfollow(btn) {
     }
 }
 
+
+
+/*
+* Event Listeners
+*/
+contacts.forEach(contact => {
+    contact.addEventListener('click', () => {
+        uid = contact.getAttribute('user_id');
+        conversation_with.setAttribute('data', uid)
+
+        openWebSocket(uid, (conversation_id) => {
+            fetch_conversation_history(conversation_id);
+        });
+
+    });
+})
+
+chat_submit_button.onclick = function (e) {
+    if (user_message_input.value !== '') send_message();
+}
+
+user_message_input.onkeyup = function (e) {
+    if (e.keyCode === 13) {
+        if (user_message_input.value !== '') send_message();
+    }
+}
+
+start_new_convo.addEventListener('click', () => {
+    const contactSection = document.querySelector('.contacts-section');
+    const selectedNav = document.querySelector('.selected');
+    selectedNav.classList.remove('selected');
+    contactNav.classList.add('selected');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+    contactSection.style.display = 'grid';
+});
+
+find_new_user.addEventListener('click', () => {
+    chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 2fr 1fr';
+    new_users_section.style.display = 'grid';
+
+    get_users();
+
+});
+
+close.addEventListener('click', () => {
+    new_users_section.style.display = 'none';
+    chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 3fr';
+});
+
+
 new_users_list.addEventListener('click', (e) => {
     if (e.target.classList.contains('follow-btn')) {
         console.log("performing task");
         follow_or_unfollow(e.target);
     }
+    if (e.target.classList.contains('temp-nav-next')) {
+        const next_url = e.target.getAttribute('next-url');
+        // remove_temp_nav();
+        get_next_users(next_url);
+        
+    }
 })
-
-// follow_btns.forEach(btn => {
-//     btn.addEventListener('click', () => {
-//         console.log("performing task");
-//         follow_or_unfollow(btn);
-//     })
-// })
