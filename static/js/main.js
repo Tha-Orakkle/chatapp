@@ -5,13 +5,14 @@ let currentChatSocket = null;
 let following_ids = null;
 const chatapp_main_wrapper = document.querySelector('.chatapp-main-wrapper');
 const API_BASE_URL = `http://${window.location.host}/api/v1/`;
-const contacts = document.querySelectorAll('.contact-name');
+const contacts_list = document.querySelector('.contacts');
 const ws_url_prefix = `ws://${window.location.host}/ws/chat/`;
 const chatlog = document.querySelector('.chat-log');
 const chat_submit_button = document.querySelector('.chat-box-input button');
 const user_message_input = document.getElementById('user-message-input');
 
 // hidden elements with necessary IDs
+const account_user_id = document.getElementById('account_user').getAttribute('data');
 const conversation = document.getElementById('conversation');
 const conversation_with = document.getElementById('conversation_with');
 
@@ -30,7 +31,6 @@ const new_users_section = document.querySelector('.new-users-section');
 const close = document.querySelector('.close');
 const find_new_user = document.querySelector('.find-new-user');
 const new_users_list = document.querySelector('.new-users-list');
-// const follow_btns = document.querySelectorAll('.follow-btn');
 
 
 
@@ -54,6 +54,7 @@ scroll_containers.forEach(scroll_container => {
 function scroll_to_bottom() {
     chatlog.scrollTop = chatlog.scrollHeight;
 }
+
 
 function getCookie(name) {
     let cookie_value = null;
@@ -234,7 +235,7 @@ function update_users_list(users) {
             <div class="user-avatar">
                 <img src="${user.profile.avatar}" alt="user profile avatar" class="avatar">
             </div>
-            <p>${user.profile.full_name || user.username}</p>
+            <p>${user.username}</span></p>
         `;
         if (following_ids.includes(user.id)) {
             html_temp = `<button class='follow-btn' data-following="true" user-id="${user.id}">Unfollow</button>`;
@@ -248,10 +249,51 @@ function update_users_list(users) {
     }
 }
 
-async function get_following() {
+function update_contacts_list(contacts) {
+    contacts_list.textContent = '';
+    for (let contact of contacts) {
+        const contact_div = document.createElement('div');
+        contact_div.classList.add('contact');
+        contact_div.innerHTML = `
+            <div class="contact-avatar">
+                <img src="${contact.profile.avatar}" class="avatar">
+            </div>
+            <div class="contact-name" user_id="${contact.id}">
+                <p>${contact.username}</p>
+            </div>
+            <img src="static/images/icons/options.png" alt="options-icon" class="options">
+        `;
+        contacts_list.appendChild(contact_div);
+    }
+}
+
+
+async function get_all_contacts() {
+    const url = API_BASE_URL + `user/${account_user_id}/following/`;
+    let response = null;
+    try {
+        response = await fetch(url, {'credentials': 'same-origin'});
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || 'An error occurred');
+        }
+        console.log(data)
+        update_contacts_list(data);
+
+    } catch (error) {
+        console.error(error);
+        if (response && response.status === 401) {
+            await get_token();
+            get_all_contacts();
+        }
+    }
+}
+
+// will be removing this sooon
+async function get_following_ids() {
     let response;
     try {
-        const url = API_BASE_URL + `following/`;
+        const url = API_BASE_URL + `following_ids/`;
         response = await fetch(url, {'credentials': 'same-origin'});
         const data = await response.json();
         if(!response.ok) {
@@ -270,7 +312,7 @@ async function get_users() {
     let response = null;
     
     try {
-        following_ids = await get_following();
+        following_ids = await get_following_ids();
         if (!following_ids) {
             throw new Error(`Could not retrieve user's following`);
         }
@@ -314,7 +356,6 @@ async function get_next_users(next_url) {
     }
 }
 
-
 async function follow_or_unfollow(btn) {
     const user_to_follow_id = btn.getAttribute('user-id');
     const action = (btn.getAttribute('data-following') === 'true') ? 'unfollow' : 'follow';
@@ -344,21 +385,29 @@ async function follow_or_unfollow(btn) {
     }
 }
 
+async function call_get_contacts() {
+    const btn = document.querySelector('#refresh-contact-btn');
+    btn.classList.add('loading-active');
+    await get_all_contacts();
+    btn.classList.remove('loading-active');
+
+}
 
 
 /*
 * Event Listeners
 */
-contacts.forEach(contact => {
-    contact.addEventListener('click', () => {
-        uid = contact.getAttribute('user_id');
+
+contacts_list.addEventListener('click', (e) => {
+    const contact = e.target.closest('.contact-name');
+    if (contact) {
+        const uid = contact.getAttribute('user_id');
         conversation_with.setAttribute('data', uid)
 
         openWebSocket(uid, (conversation_id) => {
             fetch_conversation_history(conversation_id);
         });
-
-    });
+    }
 })
 
 chat_submit_button.onclick = function (e) {
@@ -395,7 +444,6 @@ close.addEventListener('click', () => {
     chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 3fr';
 });
 
-
 new_users_list.addEventListener('click', (e) => {
     if (e.target.classList.contains('follow-btn')) {
         console.log("performing task");
@@ -403,8 +451,6 @@ new_users_list.addEventListener('click', (e) => {
     }
     if (e.target.classList.contains('temp-nav-next')) {
         const next_url = e.target.getAttribute('next-url');
-        // remove_temp_nav();
-        get_next_users(next_url);
-        
+        get_next_users(next_url);  
     }
 })

@@ -1,37 +1,22 @@
 {% load static %}
 
 <div class="contacts-section section">
-    <div class="contact-header">
+    <div class="contact-item contact-header">
         <h2>Contacts</h2>
         <div class="search-container">
             <input type="text" placeholder="Search..." class="search-input">
             <img src="{% static 'images/icons/search.png' %}" alt="search icon" class="search-icon">
         </div>
     </div>
-    <div class="btn-add find-new-user">
-        <img src="{% static 'images/icons/plus.png' %}"
-            alt="plus icon to start new conversation"
-            class="start-new-convo-icon">
-    </div>
-    <div class="contacts scroll-container">
-        {% if request.user.following.all %}
-        {% for following in request.user.following.all %}
-        <div class="contact">
-            <div class="contact-avatar">
-                <img src="{{ following.profile.avatar.url }}" class="avatar">
-            </div>
-            <div class="contact-name" user_id="{{ following.id }}">
-                {% if following.profile.full_name %}
-                <p >{{ following.profile.full_name }}</p>
-                {% else %}
-                <p>{{ following.username }}</p>
-                {% endif %}
-            </div>
-            <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
+    <div class="contact-item mid-section"> 
+        <div class="btn-add find-new-user">
+            <img src="{% static 'images/icons/plus.png' %}"
+                alt="plus icon to start new conversation"
+                class="start-new-convo-icon">
         </div>
-        {% endfor %}
-        {% endif %}
-      
+        <!-- temp -->
+        <button id="refresh-contact-btn" onclick="call_get_contacts()">&#x21BB;</button>
     </div>
-
+    <div class="contact-item contacts scroll-container">      
+    </div>
 </div>

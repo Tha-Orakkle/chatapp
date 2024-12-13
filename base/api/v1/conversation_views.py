@@ -14,6 +14,7 @@ class ConversationView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, conversation_id):
+        """ Returns conversation and the message history """
         print("=======fetching conversations=========")
         try:
             conversation = request.user.conversations.get(id=conversation_id)

@@ -1,7 +1,7 @@
 from rest_framework.exceptions import APIException
 
 
-class AuthFailed(APIException):
+class CustomAPIException(APIException):
     
     def __init__(self, detail, status_code=401):
         self.detail = detail

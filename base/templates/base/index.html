@@ -18,17 +18,18 @@
     {% include "base/partials/find_users.html" %}
 </div>
 
-{% comment %} <hr>
-<a href="{% url 'find-users' %}">start new conversation</a> {% endcomment %}
-
 {% endblock content %}
 
 {% block scripts %}
+<script id="account_user" data="{{ request.user.id }}"></script> 
+
 <script src="{% static 'js/nav.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
 <script>
     (async function() {
         await get_token();
-    })(); 
+        get_all_contacts();
+    })();
+
 </script>
 {% endblock scripts %}
