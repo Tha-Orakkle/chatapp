@@ -50,9 +50,7 @@ class UserProfileForm(forms.ModelForm):
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
 
-        if avatar and avatar.name != 'default/default.png':
-            print(avatar)
-            
+        if avatar and avatar.name != 'default/default.png':            
             # open uploaded image using Pillow                
             try:
                 img = Image.open(avatar)
