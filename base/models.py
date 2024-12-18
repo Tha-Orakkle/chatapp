@@ -118,3 +118,10 @@ class Message(models.Model):
     def __str__(self):
         return f"<Message> {self.body if len(self.body) < 50 else self.body[:50]}"
     
+
+@receiver(post_save, sender=Message)
+def update_conversation_last_updated_time(sender, instance, created, **kwargs):
+    if created:
+        conversation = instance.conversation
+        conversation.updated_at = instance.created_at
+        conversation.save()

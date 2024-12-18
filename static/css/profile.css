@@ -1,0 +1,247 @@
+/* ------------- PROFILE STYLE STARTS -------------------- */
+.profile-section  {
+    grid-template-rows: 1fr 1fr;
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 30px;
+    height: 100%;
+}
+
+.profile-header h3 {
+    color: #4e4e4e;
+    margin-bottom: 0;
+}
+.profile-header button {
+    background-color: transparent;
+    color: gray;
+    border: none;
+    border-bottom: 1px solid gray;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    cursor: pointer;
+
+}
+
+.profile-avatar-container {
+    width: 100%;
+    position: relative;
+}
+
+.profile-avatar {
+    height: 150px;
+    width: 150px;
+    border: 2px solid #4e4e4e;
+    border-radius: 50%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.line {
+    position: absolute;
+    top: 50%;
+    background-color: #4e4e4e;
+    height: 1px;
+    width: 100%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.profile-info {
+    padding: 20px;
+    font-size: 13px;
+    color: #4e4e4e;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.profile-info-item:last-child {
+    border-bottom: 1px solid #acacac;
+}
+
+.profile-info-item {
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid #acacac;
+    width: 100%;
+    align-items: center;
+}
+
+.profile-info-item.username-info p {
+    font-style: italic;
+}
+
+.profile-icon {
+    height: 20px;
+    width: 20px;
+    margin-right: 15px;
+}
+/* ------------- PROFILE STYLE ENDS -------------------- */
+
+
+/* ------------- EDIT PROFILE STYLE STARTS -------------------- */
+.edit-profile-section {
+    grid-template-rows: 50px 1fr;
+    width: 100%;
+    padding-bottom: 20px;
+}
+
+.success {
+    display: none;
+    padding: 0 10px;
+    position: fixed;
+    width: 20%;
+    z-index: 1;
+    background-color: rgba(109, 117, 197, 0.9);
+    border-radius: 7px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.edit-profle-header {
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+}
+
+
+.edit-profile-form {
+    width: 100%;
+    height: 100%;
+    padding: 30px 20px;
+    overflow-y: scroll;
+}
+.edit-profile-avatar {
+    height: 120px;
+    width: 120px;
+    border: 1px solid #c5c6c9;
+    border-radius: 50%;
+    margin: 0 auto 30px;
+    position: relative;
+
+}
+
+#edit-profile-input {
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    position: absolute;
+}
+
+#edit-prodile-avatar-label {
+    width: 30px;
+    height: 30px;
+    background-color: #c9c9c9;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#edit-prodile-avatar-label:hover {
+    background-color: #818181;
+    transition: background 0.5s ease;
+}
+
+.edit-profile-avatar .edit-profile-icon {
+    height: 20px;
+    width: 20px;    
+}
+
+
+.edit-profile-info {
+    border-bottom: 1px solid gray;
+    font-size: 14px;
+    padding: 10px;
+}
+
+.edit-profile-info.bio-info {
+    border: none;
+    padding: 10px 0 
+}
+.edit-profile-info.bio-info > label {
+    padding-right: 10px;
+    padding-left: 10px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.bio-info textarea {
+    padding: 10px;
+    resize: none;
+    width: 100%;
+    background-color: transparent;
+    outline: none;
+    font-family: inherit;
+}
+
+.edit-profile-info input {
+    outline: none;
+    background-color: transparent;
+    border: none;
+    font-size: inherit;
+
+}
+
+
+#edit-profile-submit-btn {
+    background-color: #0084ff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+#edit-profile-submit-btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.5s ease;
+}
+
+.edit-profile-error {
+    position: fixed;
+    z-index: 1;
+    width: 20%;
+    background-color: rgba(109, 117, 197, 0.9);
+    border-radius: 7px;
+    display: none;
+    flex-direction: column;
+    font-size: 12px;
+    padding-bottom: 7px;
+}
+.edit-profile-error .top {
+    padding : 0 10px;
+    text-align: end;
+    width: 100%;
+    background: linear-gradient(rgba(109, 117, 197, 0.3), rgba(255, 255, 255, 0.1));
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.edit-profile-error .top span {
+    cursor: pointer;
+    color: #4d4d4d;
+}
+
+.edit-profile-error .top span:hover {
+    color: black;
+    transition: color 0.3s ease;
+}
+.edit-profile-error p {
+    margin: 1px;
+    padding: 0 10px;
+}
+/* ------------- EDIT PROFILE STYLE ENDS -------------------- */

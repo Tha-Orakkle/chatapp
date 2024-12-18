@@ -2,22 +2,28 @@ const profileNav = document.getElementById('profile-nav');
 const messagesNav = document.getElementById('messages-nav');
 const contactNav = document.getElementById('contact-nav');
 const bookmarkNav = document.getElementById('bookmark-nav');
+
 const sections = document.querySelectorAll('.section');
+const profileSection = document.querySelector('.profile-section');
+const mesagesSection = document.querySelector('.messages-section');
+const contactSection = document.querySelector('.contacts-section');
+const bookmarkSection = document.querySelector('.bookmark-section');
+
+const profileBtn = document.querySelector('.profile-avatar-quick-menu');
+const profilePopup = document.querySelector('.profile-popup');
 
 
 profileNav.addEventListener('click', () => {
-    const profileSection = document.querySelector('.profile-section');
     const selectedNav = document.querySelector('.selected');
     selectedNav.classList.remove('selected');
     profileNav.classList.add('selected');
     sections.forEach(section => {
         section.style.display = 'none';
     });
-    profileSection.style.display = 'block';
+    profileSection.style.display = 'grid';
 });
 
 messagesNav.addEventListener('click', () => {
-    const mesagesSection = document.querySelector('.messages-section');
     const selectedNav = document.querySelector('.selected');
     selectedNav.classList.remove('selected');
     messagesNav.classList.add('selected');
@@ -28,7 +34,6 @@ messagesNav.addEventListener('click', () => {
 })
 
 contactNav.addEventListener('click', () => {
-    const contactSection = document.querySelector('.contacts-section');
     const selectedNav = document.querySelector('.selected');
     selectedNav.classList.remove('selected');
     contactNav.classList.add('selected');
@@ -39,7 +44,6 @@ contactNav.addEventListener('click', () => {
 })
 
 bookmarkNav.addEventListener('click', () => {
-    const bookmarkSection = document.querySelector('.bookmark-section');
     const selectedNav = document.querySelector('.selected');
     selectedNav.classList.remove('selected');
     bookmarkNav.classList.add('selected');
@@ -49,9 +53,6 @@ bookmarkNav.addEventListener('click', () => {
     bookmarkSection.style.display = 'block';
 })
 
-
-const profileBtn = document.querySelector('.profile-avatar-quick-menu');
-const profilePopup = document.querySelector('.profile-popup');
 
 profileBtn.addEventListener('click', () => {
     if (profilePopup.style.visibility === 'hidden') {

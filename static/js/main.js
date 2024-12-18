@@ -1,15 +1,14 @@
 /*
 * Variables
 */
+
 let currentChatSocket = null;
 let following_ids = null;
+let current_conversation = null;
+
 const chatapp_main_wrapper = document.querySelector('.chatapp-main-wrapper');
 const API_BASE_URL = `http://${window.location.host}/api/v1/`;
-const contacts_list = document.querySelector('.contacts');
 const ws_url_prefix = `ws://${window.location.host}/ws/chat/`;
-const chatlog = document.querySelector('.chat-log');
-const chat_submit_button = document.querySelector('.chat-box-input button');
-const user_message_input = document.getElementById('user-message-input');
 
 // hidden elements with necessary IDs
 const account_user_id = document.getElementById('account_user').getAttribute('data');
@@ -19,32 +18,17 @@ const conversation_with = document.getElementById('conversation_with');
 // general
 const scroll_containers = document.querySelectorAll('.scroll-container');
 
-// variables from contacts section
-const start_new_convo = document.querySelector('.start-new-convo');
+// variables from messages section
+const open_conversation_list = document.querySelector('.open-conversations-list');
+const conversations = document.querySelectorAll('.conversation');
 
 // variable from chat box section
+const chatlog = document.querySelector('.chat-log');
+const chat_box_container = document.querySelector('.chat-box-container');
+const chat_box_content = document.querySelector('.chat-box-content');
+const chat_box_landing = document.querySelector('.chat-box-landing');
 const chat_other_username = document.getElementById('chat-box-username');
 const chat_other_avatar = document.getElementById('chat-box-avatar');
-
-// variables from find-new-user section
-const new_users_section = document.querySelector('.new-users-section');
-const close = document.querySelector('.close');
-const find_new_user = document.querySelector('.find-new-user');
-const new_users_list = document.querySelector('.new-users-list');
-
-
-
-
-
-scroll_containers.forEach(scroll_container => {
-    scroll_container.addEventListener('scroll', () => {
-        scroll_container.classList.add('scrolling');
-        
-        clearTimeout(scroll_container.scrollTimeout);
-        scroll_container.scrollTimeout = setTimeout(() => {
-            scroll_container.classList.remove('scrolling')}, 500);
-    });
-});
 
 
 /*
@@ -55,8 +39,12 @@ function scroll_to_bottom() {
     chatlog.scrollTop = chatlog.scrollHeight;
 }
 
+function move_conversation_to_top() {
+    current_conversation.remove();
+    open_conversation_list.insertBefore(current_conversation, open_conversation_list.firstElementChild.nextElementSibling);
+}
 
-function getCookie(name) {
+function get_cookie(name) {
     let cookie_value = null;
     const cookies = document.cookie.split(';');
     for (let cookie of cookies) {
@@ -68,6 +56,54 @@ function getCookie(name) {
     return cookie_value;
 }
 
+function openWebSocket(uid, callback) {
+    if (currentChatSocket) {
+        currentChatSocket.close();
+    }
+    const url = ws_url_prefix + `${uid}/`
+    currentChatSocket = new WebSocket(url);
+    
+    currentChatSocket.onopen = function(e) {
+        console.log("connection established");
+    }
+
+    currentChatSocket.onclose = function (e) {
+        console.log("connection lost");
+    }
+    
+    currentChatSocket.onmessage = function (e) {
+        data = JSON.parse(e.data);
+        if (data.type === 'connection') {
+            conversation.setAttribute('data', data.conversation_id)
+            if (callback) callback(data.conversation_id);
+        } else if (data.type === 'chat_message') {
+            user_message_input.value = '';
+
+            const new_message_div = document.createElement('div');
+            const user2_id = conversation_with.getAttribute("data");
+            let html = ''
+            if (user2_id === data.sender) {
+                new_message_div.classList.add('chat-message', 'received');
+                html = `
+                <p>${data.message}</p>
+                <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
+                <span>${data.created_at}</span>`
+            } else {
+                new_message_div.classList.add('chat-message', 'sent');
+                html = `
+                <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
+                <p>${data.message}</p>
+                <span>${data.created_at}</span>`
+            }
+            
+            new_message_div.innerHTML = html;
+            chatlog.append(new_message_div);
+            scroll_to_bottom();
+
+        }
+    }
+
+}
 
 async function get_token() {
     console.log(`=========fetching new token===========`);
@@ -115,7 +151,6 @@ function extract_messages_html(message) {
     return chat_message_div;
 }
 
-
 async function fetch_conversation_history(conversation_id) {
     const url = API_BASE_URL + `conversations/${conversation_id}/`;
     let response = null;
@@ -143,254 +178,9 @@ async function fetch_conversation_history(conversation_id) {
         console.error(`API Error: ${error.message}`)
         if (!response.ok) {
             await get_token();
-            console.log("==========re-initiating API request============")
             fetch_conversation_history(conversation_id);
         }
     }
-}
-
-
-
-function openWebSocket(uid, callback) {
-    if (currentChatSocket) {
-        currentChatSocket.close();
-    }
-    const url = ws_url_prefix + `${uid}/`
-    currentChatSocket = new WebSocket(url);
-    
-    currentChatSocket.onopen = function(e) {
-        console.log("connection established");
-    }
-
-    currentChatSocket.onclose = function (e) {
-        console.log("connection lost");
-    }
-    
-    currentChatSocket.onmessage = function (e) {
-        data = JSON.parse(e.data);
-        if (data.type === 'connection') {
-            conversation.setAttribute('data', data.conversation_id)
-            if (callback) callback(data.conversation_id);
-        } else if (data.type === 'chat_message') {
-            const new_message_div = document.createElement('div');
-            const user2_id = conversation_with.getAttribute("data");
-            let html = ''
-            if (user2_id === data.sender) {
-                new_message_div.classList.add('chat-message', 'received');
-                html = `
-                <p>${data.message}</p>
-                <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
-                <span>${data.created_at}</span>`
-            } else {
-                new_message_div.classList.add('chat-message', 'sent');
-                html = `
-                <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
-                <p>${data.message}</p>
-                <span>${data.created_at}</span>`
-            }
-            
-            new_message_div.innerHTML = html;
-            chatlog.append(new_message_div);
-            scroll_to_bottom();
-
-        }
-    }
-
-}
-
-function send_message() {
-    if (currentChatSocket) {   
-        currentChatSocket.send(JSON.stringify({
-            'type': 'chat_message',
-            'body': user_message_input.value,
-        }))
-        user_message_input.value = '';
-    }
-
-}
-
-function remove_temp_nav() {
-    const temp_nav = document.querySelector('.temp-nav');
-    if (temp_nav) {
-        temp_nav.remove();
-    }
-}
-
-function add_temp_nav(next_url) {
-    const temp_nav_div = document.createElement('div');
-    temp_nav_div.classList.add('temp-nav');
-    temp_nav_div.innerHTML = `
-        <div class="temp-nav-next" next-url="${next_url}">&#43;</div>
-    `;
-    new_users_list.appendChild(temp_nav_div);
-}
-
-
-function update_users_list(users) {
-    for (let user of users) {
-        const user_div = document.createElement('div');
-        user_div.classList.add('user', 'list-item');
-        let html_temp = ``;
-        let html = `
-            <div class="user-avatar">
-                <img src="${user.profile.avatar}" alt="user profile avatar" class="avatar">
-            </div>
-            <p>${user.username}</span></p>
-        `;
-        if (following_ids.includes(user.id)) {
-            html_temp = `<button class='follow-btn' data-following="true" user-id="${user.id}">Unfollow</button>`;
-        } else {
-            html_temp = `<button class='follow-btn' data-following="false" user-id="${user.id}">Follow</button>`;
-        }
-
-        html += html_temp;
-        user_div.innerHTML = html;
-        new_users_list.appendChild(user_div);
-    }
-}
-
-function update_contacts_list(contacts) {
-    contacts_list.textContent = '';
-    for (let contact of contacts) {
-        const contact_div = document.createElement('div');
-        contact_div.classList.add('contact');
-        contact_div.innerHTML = `
-            <div class="contact-avatar">
-                <img src="${contact.profile.avatar}" class="avatar">
-            </div>
-            <div class="contact-name" user_id="${contact.id}">
-                <p>${contact.username}</p>
-            </div>
-            <img src="static/images/icons/options.png" alt="options-icon" class="options">
-        `;
-        contacts_list.appendChild(contact_div);
-    }
-}
-
-
-async function get_all_contacts() {
-    const url = API_BASE_URL + `user/${account_user_id}/following/`;
-    let response = null;
-    try {
-        response = await fetch(url, {'credentials': 'same-origin'});
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.detail || 'An error occurred');
-        }
-        console.log(data)
-        update_contacts_list(data);
-
-    } catch (error) {
-        console.error(error);
-        if (response && response.status === 401) {
-            await get_token();
-            get_all_contacts();
-        }
-    }
-}
-
-// will be removing this sooon
-async function get_following_ids() {
-    let response;
-    try {
-        const url = API_BASE_URL + `following_ids/`;
-        response = await fetch(url, {'credentials': 'same-origin'});
-        const data = await response.json();
-        if(!response.ok) {
-            throw new Error(data.detail || 'An error occured')
-        }
-        console.log(data);
-        return data;
-    } catch (error) {
-        console.error(error.message);
-        return null;
-    }
-}
-
-async function get_users() {
-    const url = API_BASE_URL + 'users/';
-    let response = null;
-    
-    try {
-        following_ids = await get_following_ids();
-        if (!following_ids) {
-            throw new Error(`Could not retrieve user's following`);
-        }
-        response = await fetch(url, {'credentials': 'same-origin'})
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.detail || 'An error occured');
-        }
-        console.log(data);
-        new_users_list.textContent = '';
-        remove_temp_nav();
-        update_users_list(data.results);
-        if (data.next) add_temp_nav(data.next);
-    } catch (error) {
-        console.error(error.message);
-        if (error.message === `Could not retrieve user's following` || (response && response.status === 401)) {
-            await get_token();
-            get_users();
-        }
-    }
-}
-
-async function get_next_users(next_url) {
-    let response = null;
-    try {
-        response = await fetch(next_url, {'credentials': 'same-origin'});
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.detail || 'An error occurred');
-        }
-        console.log(data);
-        remove_temp_nav();
-        update_users_list(data.results);
-        if(data.next) add_temp_nav(data.next);
-    } catch(error) {
-        console.error(error);
-        if (response && response.status == 401) {
-            get_token();
-            get_next_users();
-        }
-    }
-}
-
-async function follow_or_unfollow(btn) {
-    const user_to_follow_id = btn.getAttribute('user-id');
-    const action = (btn.getAttribute('data-following') === 'true') ? 'unfollow' : 'follow';
-    const url = API_BASE_URL + `follow_or_unfollow/${user_to_follow_id}/?action=${action}`;
-    let response = null;
-    try {
-        response = await fetch(url, {'crednetials': 'same-origin'});
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.detail || 'An error occurred');
-        }
-        console.log(data);
-        if (data.status === 'unfollowed') {
-            btn.setAttribute('data-following', false);
-            btn.textContent = 'Follow';
-        } else if (data.status === 'followed') {
-            btn.setAttribute('data-following', true);
-            btn.textContent = 'Unfollow';
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        if (response.status === 401) {
-            await get_token();
-            follow_or_unfollow(btn);
-        }
-    }
-}
-
-async function call_get_contacts() {
-    const btn = document.querySelector('#refresh-contact-btn');
-    btn.classList.add('loading-active');
-    await get_all_contacts();
-    btn.classList.remove('loading-active');
-
 }
 
 
@@ -398,59 +188,27 @@ async function call_get_contacts() {
 * Event Listeners
 */
 
-contacts_list.addEventListener('click', (e) => {
-    const contact = e.target.closest('.contact-name');
-    if (contact) {
-        const uid = contact.getAttribute('user_id');
-        conversation_with.setAttribute('data', uid)
+scroll_containers.forEach(scroll_container => {
+    scroll_container.addEventListener('scroll', () => {
+        scroll_container.classList.add('scrolling');
+        
+        clearTimeout(scroll_container.scrollTimeout);
+        scroll_container.scrollTimeout = setTimeout(() => {
+            scroll_container.classList.remove('scrolling')}, 500);
+    });
+});
 
+conversations.forEach(conversation => {
+    conversation.addEventListener('click', () => {
+        current_conversation = conversation;
+        const uid = conversation.getAttribute('data-convo-with');
+        const conversation_id = conversation.getAttribute('data-convo-id');
+        conversation_with.setAttribute('data', uid);
+        chat_box_container.style.padding = '0';
+        chat_box_landing.style.display = 'none';
+        chat_box_content.style.display = 'grid';
         openWebSocket(uid, (conversation_id) => {
             fetch_conversation_history(conversation_id);
         });
-    }
-})
-
-chat_submit_button.onclick = function (e) {
-    if (user_message_input.value !== '') send_message();
-}
-
-user_message_input.onkeyup = function (e) {
-    if (e.keyCode === 13) {
-        if (user_message_input.value !== '') send_message();
-    }
-}
-
-start_new_convo.addEventListener('click', () => {
-    const contactSection = document.querySelector('.contacts-section');
-    const selectedNav = document.querySelector('.selected');
-    selectedNav.classList.remove('selected');
-    contactNav.classList.add('selected');
-    sections.forEach(section => {
-        section.style.display = 'none';
-    });
-    contactSection.style.display = 'grid';
-});
-
-find_new_user.addEventListener('click', () => {
-    chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 2fr 1fr';
-    new_users_section.style.display = 'grid';
-
-    get_users();
-
-});
-
-close.addEventListener('click', () => {
-    new_users_section.style.display = 'none';
-    chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 3fr';
-});
-
-new_users_list.addEventListener('click', (e) => {
-    if (e.target.classList.contains('follow-btn')) {
-        console.log("performing task");
-        follow_or_unfollow(e.target);
-    }
-    if (e.target.classList.contains('temp-nav-next')) {
-        const next_url = e.target.getAttribute('next-url');
-        get_next_users(next_url);  
-    }
+    })
 })

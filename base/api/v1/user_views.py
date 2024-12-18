@@ -6,8 +6,7 @@ from rest_framework.response import Response
 
 from base.backends.authenticate import UserTokenAuthentication
 from base.models import User
-from .errors import CustomAPIException
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserProfileSerializer
 
 
 #  Should be updated to paginate the response
@@ -20,12 +19,39 @@ class UsersView(APIView):
         """ Return a list of users """
         queryset = User.objects.exclude(id=request.user.id).order_by('username')
         paginator = PNP()
-        paginator.page_size = 5
+        paginator.page_size = 10
         paginated_queryset = paginator.paginate_queryset(queryset, request)
         serializer = UserSerializer(paginated_queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
+    
+    
+    def put(self, request, user_id):
+        """ Update a user info including the profile """
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "invalid user ID"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        profile_serializer = UserProfileSerializer(
+            user.profile, data=request.data, partial=True)
 
-
+        if not profile_serializer.is_valid():
+            return Response(profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        user_serializer = UserSerializer(user, data=request.data, partial=True)
+        if not user_serializer.is_valid():
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        profile_serializer.validated_data['full_name'] = profile_serializer.validated_data['full_name'].title().strip()
+        profile_serializer.save()
+        user_serializer.validated_data['username'] = user_serializer.validated_data['username'].strip().lower()
+        user_serializer.save()
+        return Response({
+            'message': 'Profile updated successfully',
+            'data': user_serializer.data
+        })
+        
+        
 class FollowORUnfollowUserView(APIView):
     """ Follows or Unfollows a user """
     
@@ -63,7 +89,7 @@ class UserFollowingView(APIView):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-             raise CustomAPIException("Invalid User ID", status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid User ID"}, status=400)
         following = user.following.order_by('username')
         serializer = UserSerializer(following, many=True)
         return Response(serializer.data)
