@@ -14,7 +14,7 @@
                     <img src="{{ request.user.profile.avatar.url }}" alt="profile picture" class="avatar" id="form-avatar">
                     {{ form.avatar }}
                     <label for="{{ form.avatar.id_for_label }}" class="avatar-label">
-                        <img src="{% static 'images/icons/camera.png' %}" alt="edit profile pic icon" class="edit-profile-picture">
+                        <img src="{% static 'images/icons/camera.png' %}" alt="edit profile pic icon" class="edit-profile-icon">
                     </label>
                     {% if form.avatar.errors %}
                         <div>
@@ -102,7 +102,6 @@
 
     fileInput.addEventListener('change', () => {
         const avatar = document.getElementById('form-avatar');
-        console.log(fileInput.files);
         const file = fileInput.files[0];
         if (file) {
             const reader = new FileReader();

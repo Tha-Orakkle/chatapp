@@ -1,5 +1,35 @@
 {% load static %}
 
 <div class="profile-section section">
+    <div class="success"></div>
+    <div class="profile-header">
+        <div class="profile-avatar-container">
+            <div class="profile-avatar">
+                <img src="{{ request.user.profile.avatar.url }}" alt="" class="avatar account-user">
+            </div>
+            <div class="line"></div>
+        </div>
+        <h3>{{ request.user.profile.full_name }}</h3>
+        <button>edit profile</button>
+    </div>
+    <div class="profile-info scroll-container">
+        <div class="profile-info-item username-info">
+            <img src="{% static 'images/icons/profile_name.png' %}" alt="profile-icon" class="profile-icon">
+            <p>@{{ request.user.username }}</p>
+        </div>
+        <div class="profile-info-item email-info">
+            <img src="{% static 'images/icons/email.png' %}" alt="email-icon" class="profile-icon">
+            <p>{{ request.user.email }}</p>
+        </div>
+        <div class="profile-info-item phone-number-info">
+            <img src="{% static 'images/icons/telephone.png' %}" alt="telephone-icon" class="profile-icon">
+            <p>{% if request.user.profile.phone_number %} {{ request.user.profile.phone_number }}{% endif %}</p>
+        </div>
 
+        <div class="profile-info-item bio-info">
+            <img src="{% static 'images/icons/bio.png' %}" alt="bio-icon" class="profile-icon">
+            <p>{% if request.user.profile.bio %} {{ request.user.profile.bio }}{% endif %}</p>
+        </div>
+
+    </div>
 </div>

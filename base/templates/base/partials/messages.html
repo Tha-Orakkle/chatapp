@@ -12,7 +12,7 @@
 
     <div class="all-conversations scroll-container">
 
-        <div class="favorite-conversations">
+        {% comment %} <div class="favorite-conversations hidden">
             <h6 class="favorites-header">FAVORITES</h6>
             <div class="conversation">
                 <div class="conversation-avatar conversation-item"></div>
@@ -48,7 +48,7 @@
                 <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
             </div>
 
-        </div>
+        </div> {% endcomment %}
 
         <div class="open-conversations-list">
             <div class="open-conversation-header-wrapper">
@@ -59,7 +59,7 @@
                         class="start-new-convo-icon">
                 </button>
             </div>
-            <div class="conversation">
+            {% comment %} <div class="conversation">
                 <div class="conversation-avatar conversation-item"></div>
                 <div class="conversation-info conversation-item">
                     <p class="conversation-with">Desmond Elliot</p>
@@ -69,22 +69,23 @@
                     <p>7</p>
                 </div>
                 <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
-            </div>
+            </div> {% endcomment %}
 
             {% if conversations %}
+            
             {% for conversation in conversations %}
-            <div class="conversation">
+            <div class="conversation" data-convo-id="{{ conversation.id }}" data-convo-with="{{conversation.conversation_with.id}}">
                 <div class="conversation-avatar conversation-item">
-                    
+                    <img src="{{ conversation.conversation_with.profile.avatar.url }}" alt="" class="avatar">
                 </div>
                 <div class="conversation-info conversation-item">
                     <p class="conversation-with">{{ conversation.conversation_with.username }}</p>
-                    <p>{{ conversation.messages.first.body }}</p>
+                    <p>{{ conversation.messages.first.body|truncatechars:20 }}</p>
                 </div>
                 <div class="unread-messages">
-                    <p>7</p>
+                    <p>0</p>
                 </div>
-                <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
+                {% comment %} <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options"> {% endcomment %}
             </div>
             {% endfor %}
 

@@ -22,6 +22,7 @@ class MyUserCreationForm(UserCreationForm):
         self.fields['password2'].widget.attrs['placeholder'] = 'Confirm password'
     
     
+    
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
@@ -74,5 +75,3 @@ class UserProfileForm(forms.ModelForm):
             avatar.file = ContentFile(output.read())
             avatar.file.name = avatar.name
         return avatar
-        
-            

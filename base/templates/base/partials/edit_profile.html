@@ -1,0 +1,54 @@
+{% load static %}
+
+<div class="edit-profile-section section">
+    <div class="edit-profle-header">
+        <span class="go-back" id="cancel">&times;</span>
+    </div>
+    <form action="" class="edit-profile-form scroll-container" enctype="multipart/form-data">
+        <div class="edit-profile-error">
+            <div class="top">
+                <span>&times;</span>
+            </div>
+           <div class="body">
+            
+           </div>
+        </div>
+        {% csrf_token %}
+        <div class="edit-profile-avatar">
+            <img src="{{ request.user.profile.avatar.url }}" alt="profile picture" class="avatar account-user" id="e-profile-avatar">
+            <input type="file" accept="image/*" name="avatar" id="edit-profile-input">
+            <label for="edit-profile-input" id="edit-prodile-avatar-label">
+                <img src="{% static 'images/icons/camera.png' %}" alt="edit profile pic icon" class="edit-profile-icon">
+            </label>
+        </div>
+        <div class="edit-profile-info">
+            <label for="username">Username: </label>
+            <input type="text" name="username" id="username" value="{{ request.user.username }}">
+        </div>
+        <div class="edit-profile-info">
+            <label for="full_name">Full name: </label>
+            <input type="text" name="full_name" id="full_name" value="{{ request.user.profile.full_name }}">
+        </div>
+        <div class="edit-profile-info">
+            <label for="phone_number">Phone no: </label>
+            <input type="tel" name="phone_number" id="phone_number" value="{{ request.user.profile.phone_number }}">
+        </div>
+        <div class="edit-profile-info">
+            <label for="email">Email: </label>
+            <input type="email" name="email" id="email" value="{{ request.user.email }}">
+        </div>
+        <div class="edit-profile-info bio-info">
+            <label for="bio">Bio: </label>
+            <textarea name="bio" id="bio" rows="4" placeholder="say something about yourself">{{ request.user.profile.bio }}</textarea>
+        </div>
+
+        <input type="submit" value="update" id="edit-profile-submit-btn">
+
+    </form>
+    
+</div>
+
+
+{% comment %} // implement the remainder of the input fields
+make sure avatar fits right into the available div.
+{% endcomment %}
