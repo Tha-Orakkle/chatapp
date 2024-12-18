@@ -8,7 +8,7 @@ let current_conversation = null;
 
 const chatapp_main_wrapper = document.querySelector('.chatapp-main-wrapper');
 const API_BASE_URL = `http://${window.location.host}/api/v1/`;
-const ws_url_prefix = `ws://${window.location.host}/ws/chat/`;
+const ws_url_prefix = `ws://${window.location.host}/ws/`;
 
 // hidden elements with necessary IDs
 const account_user_id = document.getElementById('account_user').getAttribute('data');
@@ -29,6 +29,37 @@ const chat_box_content = document.querySelector('.chat-box-content');
 const chat_box_landing = document.querySelector('.chat-box-landing');
 const chat_other_username = document.getElementById('chat-box-username');
 const chat_other_avatar = document.getElementById('chat-box-avatar');
+
+
+
+/*
+ * IIFE for initial websocket connection
+ */
+
+(function () {
+  const ws_url = ws_url_prefix + 'chatapp/';
+  const socket = new WebSocket(ws_url);
+  socket.onopen = function() {
+    console.log(`connection for chatapp established`);
+  }
+  socket.onclose = function() {
+    console.log("connection for chatapp established");
+  }
+
+  socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    if (data.type === 'connection') {
+      console.log(data.status);
+    }
+  }
+})();
+
+
+
+
+
+
+
 
 
 /*
@@ -60,7 +91,7 @@ function openWebSocket(uid, callback) {
     if (currentChatSocket) {
         currentChatSocket.close();
     }
-    const url = ws_url_prefix + `${uid}/`
+    const url = ws_url_prefix + `chat/${uid}/`
     currentChatSocket = new WebSocket(url);
     
     currentChatSocket.onopen = function(e) {
