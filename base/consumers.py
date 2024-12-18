@@ -5,7 +5,26 @@ import json
 from .models import Conversation, Message, User
 
 
+class ChatAppConsumer(AsyncWebsocketConsumer):
+    """ Consumer to handle notifications and other things related """
+    async def connect(self):
+        self.user = self.scope['user']
+        self.room_group_name = self.user.id
+        
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )   
+        await self.accept()
+        await self.send(text_data=json.dumps({
+            'type': 'connection',
+            'status': 'connected successfully'
+        }))
+        print('chat app connection established')
+
+
 class ChatConsumer(AsyncWebsocketConsumer):
+    """ Consumer for the connection between two users fo real-time communication """
     async def connect(self):
         self.user = self.scope['user']
         other_user_id = self.scope['url_route']['kwargs']['user_id']
@@ -48,6 +67,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'sender': str(message.sender.id)
             })
 
+
     @sync_to_async
     def create_message(self, data):
         # conversation = Conversation.objects.get(
@@ -71,7 +91,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             body=data['body'])
         return message
 
-    
 
     @sync_to_async
     def get_conversation(self):
@@ -80,24 +99,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         return conversation
     
+    
     @sync_to_async
     def get_user(self, uid):
         return User.objects.get(id=uid)
     
     
-    # async def chat_message(self, event):
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'message',
-    #         'message': event['message'].body,
-    #         'created_at': str(event['message'].created_at),
-    #         'sender_id': str(event['message'].sender.id),
-    #     }))
-        
-
     async def send_message(self, event):
         _ignore = ['type', '_type']
         await self.send(text_data=json.dumps({
             'type': event['_type'],
             **{k: v for k, v in event.items() if k not in _ignore} #use this to implement a generic send message function
         }))
-            
