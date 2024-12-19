@@ -5,7 +5,6 @@
 const chat_submit_button = document.querySelector('.chat-box-input button');
 const user_message_input = document.getElementById('user-message-input');
 
-
 /*
 * Functions
 */

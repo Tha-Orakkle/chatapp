@@ -60,7 +60,19 @@ class ConversationSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'conversation_with']
 
 class MessageSerializer(serializers.ModelSerializer):
+    conversation = serializers.SerializerMethodField()
+    sender = serializers.SerializerMethodField()
+    recipient = serializers.SerializerMethodField()
     
     class Meta:
         model = Message
         fields = '__all__' # expecting error for sender serialization
+        
+    def get_conversation(self, obj):
+        return str(obj.conversation.id)
+    
+    def get_sender(self, obj):
+        return str(obj.sender.id)
+    
+    def get_recipient(self, obj):
+        return str(obj.recipient.id)

@@ -52,7 +52,7 @@ class User(AbstractUser):
 
 class UserProfile(models.Model):
     avatar = models.ImageField(upload_to=user_upload_image_path, 
-                               default='default/default.png',
+                               default='default/default.jpg',
                                null=True, blank=True)
     full_name = models.CharField(max_length=68, default="", blank=True)
     bio = models.TextField(default="", blank=True)
@@ -79,7 +79,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=UserProfile)
 def delete_user_avatar(sender, instance, **kwargs):
     if instance.avatar and os.path.isfile(instance.avatar.path):
-        if os.path.basename(instance.avatar.url) != 'default.png':
+        if os.path.basename(instance.avatar.url) != 'default.jpg':
             os.remove(instance.avatar.path)
     
 

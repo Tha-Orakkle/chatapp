@@ -520,6 +520,10 @@ label {
 }
 
 .unread-messages {
+    display: none;
+}
+
+.unread-messages.active {
     background: #f1d4d4;
     border-radius: 3px;
     color: red;
@@ -532,7 +536,7 @@ label {
     align-items: center;
 }
 
-.conversation-with {
+.conversation-with-name {
     font-weight: bold;
 }
 

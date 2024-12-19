@@ -76,10 +76,10 @@
             {% for conversation in conversations %}
             <div class="conversation" data-convo-id="{{ conversation.id }}" data-convo-with="{{conversation.conversation_with.id}}">
                 <div class="conversation-avatar conversation-item">
-                    <img src="{{ conversation.conversation_with.profile.avatar.url }}" alt="" class="avatar">
+                    <img src="{{ conversation.conversation_with.profile.avatar.url }}" alt="profile-avatar" class="avatar">
                 </div>
                 <div class="conversation-info conversation-item">
-                    <p class="conversation-with">{{ conversation.conversation_with.username }}</p>
+                    <p class="conversation-with-name">{{ conversation.conversation_with.username }}</p>
                     <p>{{ conversation.messages.first.body|truncatechars:20 }}</p>
                 </div>
                 <div class="unread-messages">

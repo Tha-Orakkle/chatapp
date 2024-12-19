@@ -32,6 +32,6 @@ class UserTokenAuthentication(BaseAuthentication):
             raise CustomAPIException(f"{str(e)}", status_code=status.HTTP_401_UNAUTHORIZED)
 
         current_time = timezone.now()
-        if token.created < current_time - timedelta(minutes=1):
+        if token.created < current_time - timedelta(hours=1):
             raise CustomAPIException("Token Expired", status_code=status.HTTP_401_UNAUTHORIZED)
         return (user, token)

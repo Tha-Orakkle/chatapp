@@ -18,7 +18,7 @@ class TokenGenerationView(APIView):
         user = request.user
         token, created = Token.objects.get_or_create(user=user)
         current_time = timezone.now()
-        if not created and token.created < current_time - timedelta(minutes=1):
+        if not created and token.created < current_time - timedelta(hours=1):
             token.delete()
             token = Token.objects.create(user=user)
         response =  Response({'token': token.key}, status=status.HTTP_200_OK)

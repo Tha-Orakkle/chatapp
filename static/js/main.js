@@ -10,10 +10,11 @@ const chatapp_main_wrapper = document.querySelector('.chatapp-main-wrapper');
 const API_BASE_URL = `http://${window.location.host}/api/v1/`;
 const ws_url_prefix = `ws://${window.location.host}/ws/`;
 
+
 // hidden elements with necessary IDs
 const account_user_id = document.getElementById('account_user').getAttribute('data');
-const conversation = document.getElementById('conversation');
-const conversation_with = document.getElementById('conversation_with');
+// const conversation_id_script = document.getElementById('conversation');
+const conversation_with_id_script = document.getElementById('conversation_with');
 
 // general
 const scroll_containers = document.querySelectorAll('.scroll-container');
@@ -31,10 +32,45 @@ const chat_other_username = document.getElementById('chat-box-username');
 const chat_other_avatar = document.getElementById('chat-box-avatar');
 
 
-
 /*
  * IIFE for initial websocket connection
  */
+
+function get_or_create_conversation(data) {
+    let _conversation = document.querySelector(`[data-convo-id="${data.message.conversation}"]`);
+    console.log(_conversation);
+    let unread_count = 0;
+
+    if (_conversation === null) {
+        _conversation = document.createElement('div');
+        _conversation.classList.add('conversation');
+        _conversation.setAttribute('data-convo-id', data.message.conversation);
+        _conversation.setAttribute('data-convo-with', data.from.id);
+        _conversation.addEventListener('click', () => {
+            load_chat_box(_conversation);
+        });
+    } else {
+        unread_count = parseInt(_conversation.querySelector('.unread-messages p').textContent.trim());
+    }
+    _conversation.innerHTML = `
+        <div class="conversation-avatar conversation-item">
+            <img src="${data.from.profile.avatar}" alt="profile-avatar" class="avatar">
+        </div>
+        <div class="conversation-info conversation-item">
+            <p class="conversation-with-name">${data.from.username}</p>
+            <p>
+            ${data.message.body.length > 20 ? data.message.body.slice(0, 21) : data.message.body}
+            </p>
+        </div>
+        <div class="unread-messages active">
+            <p>${unread_count + 1}</p>
+        </div>`
+    if (_conversation === current_conversation) {
+        _conversation.querySelector('.unread-messages p').textContent = 0;
+        _conversation.querySelector('.unread-messages').classList.remove('active')
+    }
+    open_conversation_list.insertBefore(_conversation, open_conversation_list.firstElementChild.nextElementSibling);
+}
 
 (function () {
   const ws_url = ws_url_prefix + 'chatapp/';
@@ -50,15 +86,31 @@ const chat_other_avatar = document.getElementById('chat-box-avatar');
     const data = JSON.parse(e.data);
     if (data.type === 'connection') {
       console.log(data.status);
+    } else if (data.type === 'chat_notification') {
+        console.log(data)
+        get_or_create_conversation(data);
     }
   }
 })();
 
 
 
-
-
-
+function load_chat_box(conversation) {
+    console.log(conversation)
+    const unread_messages_div = conversation.querySelector('.unread-messages');
+    unread_messages_div.innerHTML = `<p>0</p>`;
+    unread_messages_div.classList.remove('active');
+    current_conversation = conversation;
+    const uid = conversation.getAttribute('data-convo-with');
+    const conversation_id = conversation.getAttribute('data-convo-id');
+    conversation_with_id_script.setAttribute('data', uid);
+    chat_box_container.style.padding = '0';
+    chat_box_landing.style.display = 'none';
+    chat_box_content.style.display = 'grid';
+    openWebSocket(uid, (conversation_id) => {
+        fetch_conversation_history(conversation_id);
+    });
+}
 
 
 
@@ -88,7 +140,8 @@ function get_cookie(name) {
 }
 
 function openWebSocket(uid, callback) {
-    if (currentChatSocket) {
+    if (currentChatSocket && currentChatSocket.readyState === WebSocket.OPEN) {
+        console.log("Closing exisiting WebSocket connection");
         currentChatSocket.close();
     }
     const url = ws_url_prefix + `chat/${uid}/`
@@ -105,13 +158,14 @@ function openWebSocket(uid, callback) {
     currentChatSocket.onmessage = function (e) {
         data = JSON.parse(e.data);
         if (data.type === 'connection') {
-            conversation.setAttribute('data', data.conversation_id)
+            // conversation_id_script.setAttribute('data', data.conversation_id)
+            console.log(data.status);
             if (callback) callback(data.conversation_id);
         } else if (data.type === 'chat_message') {
             user_message_input.value = '';
 
             const new_message_div = document.createElement('div');
-            const user2_id = conversation_with.getAttribute("data");
+            const user2_id = conversation_with_id_script.getAttribute("data");
             let html = ''
             if (user2_id === data.sender) {
                 new_message_div.classList.add('chat-message', 'received');
@@ -129,8 +183,10 @@ function openWebSocket(uid, callback) {
             
             new_message_div.innerHTML = html;
             chatlog.append(new_message_div);
+            const msg_p = current_conversation.querySelector('.conversation-info p:last-child');
+            msg_p.textContent = data.message.length > 20 ? data.message.slice(0, 21) + '...' : data.message;
             scroll_to_bottom();
-
+            
         }
     }
 
@@ -160,7 +216,7 @@ async function get_token() {
 
 function extract_messages_html(message) {
     const chat_message_div = document.createElement('div');
-    const user2_id = conversation_with.getAttribute('data');
+    const user2_id = conversation_with_id_script.getAttribute('data');
 
     chat_message_div.classList.add('chat-message');
     let html = ``;
@@ -231,15 +287,6 @@ scroll_containers.forEach(scroll_container => {
 
 conversations.forEach(conversation => {
     conversation.addEventListener('click', () => {
-        current_conversation = conversation;
-        const uid = conversation.getAttribute('data-convo-with');
-        const conversation_id = conversation.getAttribute('data-convo-id');
-        conversation_with.setAttribute('data', uid);
-        chat_box_container.style.padding = '0';
-        chat_box_landing.style.display = 'none';
-        chat_box_content.style.display = 'grid';
-        openWebSocket(uid, (conversation_id) => {
-            fetch_conversation_history(conversation_id);
-        });
+        load_chat_box(conversation); 
     })
 })
