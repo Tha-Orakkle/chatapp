@@ -14,6 +14,8 @@ const new_users_section = document.querySelector('.new-users-section');
 * Functions
 */
 
+// updates the contact list afresh with the new data gotten from 
+// get_all_contacts
 function update_contacts_list(contacts) {
     contacts_list.textContent = '';
     for (let contact of contacts) {
@@ -32,6 +34,7 @@ function update_contacts_list(contacts) {
     }
 }
 
+// fetches all the contacts
 async function get_all_contacts() {
     const url = API_BASE_URL + `user/${account_user_id}/following/`;
     let response = null;
@@ -53,6 +56,8 @@ async function get_all_contacts() {
     }
 }
 
+
+// refreshes the contacts list
 async function call_get_contacts() {
     const btn = document.querySelector('#refresh-contact-btn');
     btn.classList.add('loading-active');
@@ -60,7 +65,7 @@ async function call_get_contacts() {
     btn.classList.remove('loading-active');
 }
 
-
+// gets a list of IDs of all the people the account user is currently following
 async function get_following_ids() {
     let response;
     try {
@@ -78,6 +83,8 @@ async function get_following_ids() {
     }
 }
 
+
+// gets new users for the find new users section 
 async function get_users() {
     const url = API_BASE_URL + 'users/';
     let response = null;
@@ -106,6 +113,7 @@ async function get_users() {
     }
 }
 
+// follow or unfollows a user
 async function follow_or_unfollow(btn) {
     const user_to_follow_id = btn.getAttribute('user-id');
     const action = (btn.getAttribute('data-following') === 'true') ? 'unfollow' : 'follow';
@@ -135,6 +143,8 @@ async function follow_or_unfollow(btn) {
     }
 }
 
+
+// show more users on the find more users on the find new users section
 async function get_next_users(next_url) {
     let response = null;
     try {
@@ -156,6 +166,7 @@ async function get_next_users(next_url) {
     }
 }
 
+// remove navigation to show more users on the find new users section
 function remove_temp_nav() {
     const temp_nav = document.querySelector('.temp-nav');
     if (temp_nav) {
@@ -163,6 +174,7 @@ function remove_temp_nav() {
     }
 }
 
+// adds navigation to show more users on the find new users  section
 function add_temp_nav(next_url) {
     const temp_nav_div = document.createElement('div');
     temp_nav_div.classList.add('temp-nav');
@@ -172,6 +184,7 @@ function add_temp_nav(next_url) {
     new_users_list.appendChild(temp_nav_div);
 }
 
+// updates the users list in the find new user section
 function update_users_list(users) {
     for (let user of users) {
         const user_div = document.createElement('div');
@@ -201,13 +214,21 @@ function update_users_list(users) {
 */
 
 contacts_list.addEventListener('click', (e) => {
-    const contact = e.target.closest('.contact-name');
+    const contact = e.target.closest('.contact');
     if (contact) {
-        const uid = contact.getAttribute('user_id');
-        conversation_with.setAttribute('data', uid);
+        const uid = contact.querySelector('.contact-name').getAttribute('user_id');
+
+        // update contact data
+        contact_data.contact_id = uid;
+        contact_data.avatar_url = contact.querySelector('img').src;
+        contact_data.username = contact.querySelector('.contact-name p').textContent.trim();
+
+        // restructure interface and present chatbox
         chat_box_container.style.padding = '0';
         chat_box_landing.style.display = 'none';
         chat_box_content.style.display = 'grid';
+
+        // open websocket and fetch conversation history
         openWebSocket(uid, (conversation_id) => {
             fetch_conversation_history(conversation_id);
         });
@@ -215,6 +236,7 @@ contacts_list.addEventListener('click', (e) => {
 })
 
 
+// loads contact section
 start_new_convo.addEventListener('click', () => {
     const contactSection = document.querySelector('.contacts-section');
     const selectedNav = document.querySelector('.selected');
@@ -226,6 +248,8 @@ start_new_convo.addEventListener('click', () => {
     contactSection.style.display = 'grid';
 });
 
+
+// loads section to find all users on the app
 find_new_user.addEventListener('click', () => {
     chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 2fr 1fr';
     new_users_section.style.display = 'grid';
@@ -234,11 +258,16 @@ find_new_user.addEventListener('click', () => {
 
 });
 
+
+// close the find all users section
 close.addEventListener('click', () => {
     new_users_section.style.display = 'none';
     chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 3fr';
 });
 
+
+// follow a user from the find all users section
+// calls the follow_or_unfollow function 
 new_users_list.addEventListener('click', (e) => {
     if (e.target.classList.contains('follow-btn')) {
         console.log("performing task");

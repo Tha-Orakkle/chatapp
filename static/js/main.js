@@ -5,6 +5,7 @@
 let currentChatSocket = null;
 let following_ids = null;
 let current_conversation = null;
+const contact_data = {};
 
 const chatapp_main_wrapper = document.querySelector('.chatapp-main-wrapper');
 const API_BASE_URL = `http://${window.location.host}/api/v1/`;
@@ -36,41 +37,9 @@ const chat_other_avatar = document.getElementById('chat-box-avatar');
  * IIFE for initial websocket connection
  */
 
-function get_or_create_conversation(data) {
-    let _conversation = document.querySelector(`[data-convo-id="${data.message.conversation}"]`);
-    console.log(_conversation);
-    let unread_count = 0;
 
-    if (_conversation === null) {
-        _conversation = document.createElement('div');
-        _conversation.classList.add('conversation');
-        _conversation.setAttribute('data-convo-id', data.message.conversation);
-        _conversation.setAttribute('data-convo-with', data.from.id);
-        _conversation.addEventListener('click', () => {
-            load_chat_box(_conversation);
-        });
-    } else {
-        unread_count = parseInt(_conversation.querySelector('.unread-messages p').textContent.trim());
-    }
-    _conversation.innerHTML = `
-        <div class="conversation-avatar conversation-item">
-            <img src="${data.from.profile.avatar}" alt="profile-avatar" class="avatar">
-        </div>
-        <div class="conversation-info conversation-item">
-            <p class="conversation-with-name">${data.from.username}</p>
-            <p>
-            ${data.message.body.length > 20 ? data.message.body.slice(0, 21) : data.message.body}
-            </p>
-        </div>
-        <div class="unread-messages active">
-            <p>${unread_count + 1}</p>
-        </div>`
-    if (_conversation === current_conversation) {
-        _conversation.querySelector('.unread-messages p').textContent = 0;
-        _conversation.querySelector('.unread-messages').classList.remove('active')
-    }
-    open_conversation_list.insertBefore(_conversation, open_conversation_list.firstElementChild.nextElementSibling);
-}
+
+
 
 (function () {
   const ws_url = ws_url_prefix + 'chatapp/';
@@ -88,109 +57,21 @@ function get_or_create_conversation(data) {
       console.log(data.status);
     } else if (data.type === 'chat_notification') {
         console.log(data)
-        get_or_create_conversation(data);
+        const conversation = get_or_create_conversation(data);
+        update_conversation_content(data, conversation);
+        move_conversation_to_top(conversation);
     }
   }
 })();
 
 
 
-function load_chat_box(conversation) {
-    console.log(conversation)
-    const unread_messages_div = conversation.querySelector('.unread-messages');
-    unread_messages_div.innerHTML = `<p>0</p>`;
-    unread_messages_div.classList.remove('active');
-    current_conversation = conversation;
-    const uid = conversation.getAttribute('data-convo-with');
-    const conversation_id = conversation.getAttribute('data-convo-id');
-    conversation_with_id_script.setAttribute('data', uid);
-    chat_box_container.style.padding = '0';
-    chat_box_landing.style.display = 'none';
-    chat_box_content.style.display = 'grid';
-    openWebSocket(uid, (conversation_id) => {
-        fetch_conversation_history(conversation_id);
-    });
-}
 
 
 
 /*
 * Functions
 */
-
-function scroll_to_bottom() {
-    chatlog.scrollTop = chatlog.scrollHeight;
-}
-
-function move_conversation_to_top() {
-    current_conversation.remove();
-    open_conversation_list.insertBefore(current_conversation, open_conversation_list.firstElementChild.nextElementSibling);
-}
-
-function get_cookie(name) {
-    let cookie_value = null;
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        const [n, v] = cookie.split('=');
-        if (n === name) {
-            cookie_value = decodeURIComponent(v.trim());
-        }
-    }
-    return cookie_value;
-}
-
-function openWebSocket(uid, callback) {
-    if (currentChatSocket && currentChatSocket.readyState === WebSocket.OPEN) {
-        console.log("Closing exisiting WebSocket connection");
-        currentChatSocket.close();
-    }
-    const url = ws_url_prefix + `chat/${uid}/`
-    currentChatSocket = new WebSocket(url);
-    
-    currentChatSocket.onopen = function(e) {
-        console.log("connection established");
-    }
-
-    currentChatSocket.onclose = function (e) {
-        console.log("connection lost");
-    }
-    
-    currentChatSocket.onmessage = function (e) {
-        data = JSON.parse(e.data);
-        if (data.type === 'connection') {
-            // conversation_id_script.setAttribute('data', data.conversation_id)
-            console.log(data.status);
-            if (callback) callback(data.conversation_id);
-        } else if (data.type === 'chat_message') {
-            user_message_input.value = '';
-
-            const new_message_div = document.createElement('div');
-            const user2_id = conversation_with_id_script.getAttribute("data");
-            let html = ''
-            if (user2_id === data.sender) {
-                new_message_div.classList.add('chat-message', 'received');
-                html = `
-                <p>${data.message}</p>
-                <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
-                <span>${data.created_at}</span>`
-            } else {
-                new_message_div.classList.add('chat-message', 'sent');
-                html = `
-                <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
-                <p>${data.message}</p>
-                <span>${data.created_at}</span>`
-            }
-            
-            new_message_div.innerHTML = html;
-            chatlog.append(new_message_div);
-            const msg_p = current_conversation.querySelector('.conversation-info p:last-child');
-            msg_p.textContent = data.message.length > 20 ? data.message.slice(0, 21) + '...' : data.message;
-            scroll_to_bottom();
-            
-        }
-    }
-
-}
 
 async function get_token() {
     console.log(`=========fetching new token===========`);
@@ -212,6 +93,111 @@ async function get_token() {
     } catch (error) {
         console.error(error.message)
     }
+}
+
+function get_cookie(name) {
+    let cookie_value = null;
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [n, v] = cookie.split('=');
+        if (n === name) {
+            cookie_value = decodeURIComponent(v.trim());
+        }
+    }
+    return cookie_value;
+}
+
+function scroll_to_bottom() {
+    chatlog.scrollTop = chatlog.scrollHeight;
+}
+
+function move_conversation_to_top(conversation=null) {
+    conversation = conversation || current_conversation;
+    conversation.remove();
+    open_conversation_list.insertBefore(conversation, open_conversation_list.firstElementChild.nextElementSibling);
+}
+
+
+function update_conversation_content(data, conversation) {
+    if (conversation) {
+        const unread_messages_count = conversation.querySelector('.unread-messages p');
+        const unread_count = unread_messages_count ? parseInt(unread_messages_count.textContent) : 0;
+        conversation.innerHTML = `
+            <div class="conversation-avatar conversation-item">
+                <img src="${data.from.profile.avatar}" alt="profile-avatar" class="avatar">
+            </div>
+            <div class="conversation-info conversation-item">
+                <p class="conversation-with-name">${data.from.username}</p>
+                <p>
+                ${data.message.body.length > 20 ? data.message.body.slice(0, 21) : data.message.body}
+                </p>
+            </div>`
+            if (conversation !== current_conversation) {
+                conversation.innerHTML += `
+                <div class="unread-messages active">
+                    <p>${unread_count + 1}</p>
+                </div>`
+            } else {
+                conversation.innerHTML += `
+                <div class="unread-messages">
+                    <p>0</p>
+                </div>`
+            }
+    } else {
+        if (current_conversation && !current_conversation.firstElementChild) {
+            current_conversation.innerHTML = `
+                <div class="conversation-avatar conversation-item">
+                    <img src="${contact_data.avatar_url}" alt="profile-avatar" class="avatar">
+                </div>
+                <div class="conversation-info conversation-item">
+                    <p class="conversation-with-name">${contact_data.username}</p>
+                    <p>
+                    ${data.message.body.length > 20 ? data.message.body.slice(0, 21) : data.message.body}
+                    </p>
+                </div>
+                <div class="unread-messages">
+                    <p>0</p>
+                </div>`
+        } else {
+            const msg_p = current_conversation.querySelector('.conversation-info p:last-child');
+            msg_p.textContent = data.message.body.length > 20 ? data.message.body.slice(0, 21) + '...' : data.message.body;
+        }
+    }
+}
+
+function get_or_create_conversation(data) {
+    let _conversation = null;
+    if (data) {
+        _conversation = document.querySelector(`[data-convo-id="${data.message.conversation}"]`);
+        console.log(_conversation);
+    
+        if (_conversation === null) {
+            _conversation = document.createElement('div');
+            _conversation.classList.add('conversation');
+            _conversation.setAttribute('data-convo-id', data.message.conversation);
+            _conversation.setAttribute('data-convo-with', data.from.id);
+            _conversation.addEventListener('click', () => {
+                load_chat_box(_conversation);
+            });
+        }
+    } else {
+        _conversation = document.querySelector(`[data-convo-id="${contact_data.contact_convo_id}"]`);
+            
+        console.log(_conversation);
+    
+        if (_conversation === null) {
+            console.log("CONTACT_DATA", contact_data);
+            _conversation = document.createElement('div');
+            _conversation.classList.add('conversation');
+            _conversation.setAttribute('data-convo-id', contact_data.contact_convo_id);
+            _conversation.setAttribute('data-convo-with', contact_data.contact_id);
+            _conversation.addEventListener('click', () => {
+                load_chat_box(_conversation);
+            });
+        }
+    }
+    
+    return _conversation;
 }
 
 function extract_messages_html(message) {
@@ -269,6 +255,82 @@ async function fetch_conversation_history(conversation_id) {
         }
     }
 }
+
+function openWebSocket(uid, callback) {
+    if (currentChatSocket && currentChatSocket.readyState === WebSocket.OPEN) {
+        console.log("Closing exisiting WebSocket connection");
+        currentChatSocket.close();
+    }
+    const url = ws_url_prefix + `chat/${uid}/`
+    currentChatSocket = new WebSocket(url);
+    
+    currentChatSocket.onopen = function(e) {
+        console.log("connection established");
+    }
+
+    currentChatSocket.onclose = function (e) {
+        console.log("connection lost");
+    }
+    
+    currentChatSocket.onmessage = function (e) {
+        data = JSON.parse(e.data);
+        if (data.type === 'connection') {
+            contact_data.contact_convo_id = data.conversation_id;
+            current_conversation = get_or_create_conversation();
+            console.log(data.status);
+            if (callback) callback(data.conversation_id);
+        } else if (data.type === 'chat_message') {
+            user_message_input.value = '';
+
+            const new_message_div = document.createElement('div');
+            const user2_id = conversation_with_id_script.getAttribute("data");
+            let html = ''
+            if (user2_id === data.message.sender) {
+                new_message_div.classList.add('chat-message', 'received');
+                html = `
+                <p>${data.message.body}</p>
+                <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
+                <span>${data.message.created_at}</span>`
+            } else {
+                new_message_div.classList.add('chat-message', 'sent');
+                html = `
+                <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
+                <p>${data.message.body}</p>
+                <span>${data.message.created_at}</span>`
+            }
+            
+            // add new message to chat box
+            new_message_div.innerHTML = html;
+            chatlog.append(new_message_div);
+            scroll_to_bottom();
+
+            // update conversations list 
+            update_conversation_content(data=data);
+            move_conversation_to_top();
+            
+        }
+    }
+
+}
+
+function load_chat_box(conversation) {
+    console.log(conversation)
+    const unread_messages_div = conversation.querySelector('.unread-messages');
+    unread_messages_div.innerHTML = `<p>0</p>`;
+    unread_messages_div.classList.remove('active');
+    const uid = conversation.getAttribute('data-convo-with');
+    const conversation_id = conversation.getAttribute('data-convo-id');
+    conversation_with_id_script.setAttribute('data', uid);
+    chat_box_container.style.padding = '0';
+    chat_box_landing.style.display = 'none';
+    chat_box_content.style.display = 'grid';
+    openWebSocket(uid, (conversation_id) => {
+        fetch_conversation_history(conversation_id);
+    });
+}
+
+
+
 
 
 /*

@@ -26,7 +26,7 @@ function send_message() {
 chat_submit_button.onclick = function (e) {
     if (user_message_input.value.trim() !== '') {
         send_message();
-        move_conversation_to_top();
+        // move_conversation_to_top();
     }
     
 }
@@ -35,7 +35,7 @@ user_message_input.onkeyup = function (e) {
     if (e.keyCode === 13) {
         if (user_message_input.value.trim() !== '') {
             send_message();
-            move_conversation_to_top();
+            // move_conversation_to_top();
         }
     }
 }

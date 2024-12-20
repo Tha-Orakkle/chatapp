@@ -83,10 +83,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.room_group_name, {
                 'type': 'send_message',
-                '_type': 'chat_message',
-                'message': message.body,
-                'created_at': str(message.created_at),
-                'sender': str(message.sender.id)
+                'message': message,
             })
             
             print(f"OTHER_USER_ID: {str(self.other_user.id)}")            
@@ -101,13 +98,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def create_message(self, data):
-        # conversation = Conversation.objects.get(
-        #     id=data['conversation_id'])
         convo_other_user, created = Conversation.objects.get_or_create(
             user=self.other_user,
             conversation_with=self.user,
         )
-        # message fpr self.user conversation
+        
+        # message for self.user conversation
         message = Message.objects.create(
             conversation=self.conversation,
             sender=self.user,
@@ -136,10 +132,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return User.objects.get(id=uid)
     
     
+    @sync_to_async
+    def get_message_serialized_data(self, message):
+        return {'message': MessageSerializer(message).data}
+    
     async def send_message(self, event):
-        _ignore = ['type', '_type']
+        serialized_data = await self.get_message_serialized_data(event['message'])
         await self.send(text_data=json.dumps({
-            'type': event['_type'],
-            **{k: v for k, v in event.items() if k not in _ignore} #use this to implement a generic send message function
+            'type': 'chat_message',
+            **serialized_data
         }))
-
