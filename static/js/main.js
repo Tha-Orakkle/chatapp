@@ -37,18 +37,16 @@ const chat_other_avatar = document.getElementById('chat-box-avatar');
  * IIFE for initial websocket connection
  */
 
-
-
+const ws_url = ws_url_prefix + 'chatapp/';
+let socket = new WebSocket(ws_url);
 
 
 (function () {
-  const ws_url = ws_url_prefix + 'chatapp/';
-  const socket = new WebSocket(ws_url);
   socket.onopen = function() {
-    console.log(`connection for chatapp established`);
+    console.log("connection for chatapp established");
   }
   socket.onclose = function() {
-    console.log("connection for chatapp established");
+    console.log("connection for chatapp disconnected");
   }
 
   socket.onmessage = function(e) {
@@ -64,6 +62,15 @@ const chat_other_avatar = document.getElementById('chat-box-avatar');
   }
 })();
 
+
+setInterval(() => {
+    if(socket.readyState === WebSocket.CLOSED) {
+        socket = new WebSocket(ws_url);
+        socket.onopen = () => {
+            console.log("connection for chatapp re-established");
+        }
+    }
+}, 10000)
 
 
 
@@ -328,9 +335,6 @@ function load_chat_box(conversation) {
         fetch_conversation_history(conversation_id);
     });
 }
-
-
-
 
 
 /*
