@@ -228,6 +228,12 @@ contacts_list.addEventListener('click', (e) => {
         chat_box_landing.style.display = 'none';
         chat_box_content.style.display = 'grid';
 
+        // close chat socket if one is already open 
+        if (currentChatSocket && currentChatSocket.readyState === WebSocket.OPEN) {
+            console.log("Closing exisiting WebSocket connection");
+            currentChatSocket.close();
+        }
+
         // open websocket and fetch conversation history
         openWebSocket(uid, (conversation_id) => {
             fetch_conversation_history(conversation_id);

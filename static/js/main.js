@@ -38,42 +38,48 @@ const chat_other_avatar = document.getElementById('chat-box-avatar');
  */
 
 const ws_url = ws_url_prefix + 'chatapp/';
-let socket = new WebSocket(ws_url);
+let reconnectInterval = 1000;
+const maxInterval = 30000;
 
 
-(function () {
-  socket.onopen = function() {
-    console.log("connection for chatapp established");
-  }
-  socket.onclose = function() {
-    console.log("connection for chatapp disconnected");
-  }
+const reconnectWebSocket = (type, uid=null, callback=null) => {
+    setTimeout(() => {
+        if (type === 'chatapp') {
+            chatAppWebSocket();
+        } else if (type === 'chat') {
+            openWebSocket(uid, callback);
+        }
+        reconnectInterval = Math.min(reconnectInterval * 2, maxInterval);
+    }, reconnectInterval);
+}
 
-  socket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    if (data.type === 'connection') {
-      console.log(data.status);
-    } else if (data.type === 'chat_notification') {
-        console.log(data)
-        const conversation = get_or_create_conversation(data);
-        update_conversation_content(data, conversation);
-        move_conversation_to_top(conversation);
+
+const chatAppWebSocket = () => {
+    let socket = new WebSocket(ws_url);
+
+    socket.onopen = function() {
+        console.log("connection for chatapp established");
+        reconnectInterval = 1000;
     }
-  }
-})();
+    socket.onclose = function() {
+        console.log("connection for chatapp disconnected");
+        reconnectWebSocket('chatapp');
+    }
 
-
-setInterval(() => {
-    if(socket.readyState === WebSocket.CLOSED) {
-        socket = new WebSocket(ws_url);
-        socket.onopen = () => {
-            console.log("connection for chatapp re-established");
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'connection') {
+            console.log(data.status);
+        } else if (data.type === 'chat_notification') {
+            console.log(data)
+            const conversation = get_or_create_conversation(data);
+            update_conversation_content(data, conversation);
+            move_conversation_to_top(conversation);
         }
     }
-}, 10000)
+};
 
-
-
+chatAppWebSocket();
 
 
 /*
@@ -264,19 +270,17 @@ async function fetch_conversation_history(conversation_id) {
 }
 
 function openWebSocket(uid, callback) {
-    if (currentChatSocket && currentChatSocket.readyState === WebSocket.OPEN) {
-        console.log("Closing exisiting WebSocket connection");
-        currentChatSocket.close();
-    }
     const url = ws_url_prefix + `chat/${uid}/`
     currentChatSocket = new WebSocket(url);
     
     currentChatSocket.onopen = function(e) {
         console.log("connection established");
+        reconnectInterval = 1000;
     }
 
     currentChatSocket.onclose = function (e) {
         console.log("connection lost");
+        reconnectWebSocket('chat', uid, callback);
     }
     
     currentChatSocket.onmessage = function (e) {
@@ -331,6 +335,12 @@ function load_chat_box(conversation) {
     chat_box_container.style.padding = '0';
     chat_box_landing.style.display = 'none';
     chat_box_content.style.display = 'grid';
+    
+    // close chat socket if one is already open 
+    if (currentChatSocket && currentChatSocket.readyState === WebSocket.OPEN) {
+        console.log("Closing exisiting WebSocket connection");
+        currentChatSocket.close();
+    }
     openWebSocket(uid, (conversation_id) => {
         fetch_conversation_history(conversation_id);
     });
