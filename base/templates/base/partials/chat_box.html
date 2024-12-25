@@ -13,6 +13,10 @@
         src="{% static 'images/icons/options.png' %}"
         alt="options icon"
         class="chat-top-options-icon" />
+      <div class="popup chat-box-popup">
+        <button id="popup-profile-btn">profile</button>
+        <button id="popup-clear-chat">clear chat</button>
+      </div>
     </div>
     <div class="chat-log scroll-container"></div>
     <div class="chat-box-input">
@@ -28,6 +32,16 @@
           alt="paper-plane icon"
           class="send-icon" />
       </button>
+    </div>
+    <div class="popup clear-chat overlay">
+      <div class="popup-clear-chat scroll-container"> 
+        <p>Are you sure you want to clear chat. Once cleared you cannot retrieve chat history again.</p>
+        <div class="clear-chat-response">
+          <button id="clear-chat-yes">yes</button>
+          <button id="clear-chat-no">no</button>
+        </div>
+      </div>
+      
     </div>
   </div>
 

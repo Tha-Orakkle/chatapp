@@ -282,6 +282,7 @@ close.addEventListener('click', () => {
 
 function showUserProfile(user_data) {
     // show profile page
+    chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 2fr 1fr';
     new_users_section.style.display = 'none';
     otherUserProfileSection.style.display = 'grid'
     profile_data = {

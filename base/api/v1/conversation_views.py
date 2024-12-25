@@ -27,3 +27,18 @@ class ConversationView(APIView):
             'conversation': convo_serializer.data,
             'messages': msg_serializer.data
         })
+        
+    def delete(self, request, conversation_id):
+        """ Deletes a Conversation  """
+        retain = request.GET.get('retain') # if exists delete only messages but not conversation
+        try:
+            conversation = request.user.conversations.get(id=conversation_id)
+        except Conversation.DoesNotExist:
+            return Response({'detail': 'Invalid conversation id'}, status=status.HTTP_400_BAD_REQUEST)
+        if retain:
+            for msg in conversation.messages.all():
+                msg.delete()
+            return Response({'success': True, 'detail': 'Conversation messages deleted successfully'})
+
+        conversation.delete()
+        return Response({'success': True, 'detail': 'Conversation deleted successfully'})

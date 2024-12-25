@@ -18,7 +18,12 @@ const profile_start_chat = document.querySelector('.other-profile-btns .start-ch
 
 close_profile.addEventListener('click', () => {
     otherUserProfileSection.style.display = 'none'
-    new_users_section.style.display = 'grid';
+    if (from_popup_button) {
+        chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 3fr';
+        from_popup_button = false;
+    } else {
+        new_users_section.style.display = 'grid';
+    }
 })
 
 profile_follow_btn.addEventListener('click', () => {

@@ -26,6 +26,14 @@ body {
     display: none;
 }
 
+.options {
+    height: 15px;
+    width: 15px;
+    cursor: pointer;
+    margin: 5px 5px;
+}
+
+
 .go-back {
     color: #aaa;
     font-weight: bold;
@@ -758,6 +766,7 @@ label {
     align-items: center;
     gap: 15px;
     padding: 20px;
+    position: relative;
 }
 
 .chat-box-profile-info {
@@ -829,11 +838,9 @@ label {
     color: black;
 }
 
-.options {
-    height: 15px;
-    width: 15px;
-    cursor: pointer;
-    margin: 5px 5px;
+.options.chat-log-options {
+    height: 10px;
+    width: 10px;
 }
 
 .chat-message > span {
@@ -894,10 +901,7 @@ label {
     height: 15px;
     width: 15px;
 }
-/* ---------CHAT BOX STYLE END ------------- */
 
-
-/* ----TEST--- */
 .chat-box-landing h1 {
     font-size: 50px;
     /* color: gray; */
@@ -926,6 +930,86 @@ label {
     margin: 0;
     text-align: center;
     font-size: 12px;
-    /* color: gray; */
-     
+    /* color: gray; */     
+}
+/* ---------CHAT BOX STYLE END ------------- */
+
+
+/* ----TEST--- */
+
+
+.chat-box-popup {
+    /* visibility: hidden; */
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 50px;
+    z-index: 3;
+    border: 1px solid #ccc;
+    background-color: #e4e6eb;
+    border-radius: 5px;
+    gap: 5px;
+    padding: 5px;
+}
+
+
+.chat-box-popup > * {
+    text-decoration: none;
+    border: none;
+    font-family: inherit; 
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.clear-chat.overlay {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-clear-chat {
+    width: 25%;
+    height: 17%;
+    overflow-y: auto;
+    border: 1px solid #888;
+    border-radius: 5px;
+    padding: 10px 10px;
+    background-color: #f7f7f7;
+    color: #888;
+}
+
+.popup-clear-chat p {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.popup-clear-chat .clear-chat-response {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.clear-chat-response > * {
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    color: #0084ff;
+    font-family: inherit;
+    /* font-size: 13px; */
+    background-color: transparent;
+}
+
+
+.clear-chat-response > *:hover {
+    text-decoration: underline;
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
 }
