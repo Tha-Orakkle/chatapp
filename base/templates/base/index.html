@@ -17,6 +17,7 @@
 
     {% include "base/partials/chat_box.html" %}
     {% include "base/partials/find_users.html" %}
+    {% include "base/partials/other_user.html" %}
 </div>
 
 {% endblock content %}
@@ -29,6 +30,7 @@
 <script src="{% static 'js/contact.js' %}"></script>
 <script src="{% static 'js/chat_box.js' %}"></script>
 <script src="{% static 'js/profile.js' %}"></script>
+<script src="{% static 'js/other_user_profile.js' %}"></script>
 <script>
     (async function() {
         await get_token();

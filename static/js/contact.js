@@ -2,12 +2,17 @@
 * Variables
 */
 
+let follow_btn_from_users_list = null;
+
 const contacts_list = document.querySelector('.contacts');
 const start_new_convo = document.querySelector('.start-new-convo');
 const new_users_list = document.querySelector('.new-users-list');
 const close = document.querySelector('#close');
 const find_new_user = document.querySelector('.find-new-user');
 const new_users_section = document.querySelector('.new-users-section');
+const otherUserProfileSection = document.querySelector('.other-profile-section');
+
+
 
 
 /*
@@ -44,7 +49,6 @@ async function get_all_contacts() {
         if (!response.ok) {
             throw new Error(data.detail || 'An error occurred');
         }
-        console.log(data)
         update_contacts_list(data);
 
     } catch (error) {
@@ -75,7 +79,6 @@ async function get_following_ids() {
         if(!response.ok) {
             throw new Error(data.detail || 'An error occured')
         }
-        console.log(data);
         return data;
     } catch (error) {
         console.error(error.message);
@@ -99,7 +102,6 @@ async function get_users() {
         if (!response.ok) {
             throw new Error(data.detail || 'An error occured');
         }
-        console.log(data);
         new_users_list.textContent = '';
         remove_temp_nav();
         update_users_list(data.results);
@@ -114,7 +116,7 @@ async function get_users() {
 }
 
 // follow or unfollows a user
-async function follow_or_unfollow(btn) {
+async function follow_or_unfollow(btn, follow_btn_from_users_list=null) {
     const user_to_follow_id = btn.getAttribute('user-id');
     const action = (btn.getAttribute('data-following') === 'true') ? 'unfollow' : 'follow';
     const url = API_BASE_URL + `follow_or_unfollow/${user_to_follow_id}/?action=${action}`;
@@ -125,13 +127,20 @@ async function follow_or_unfollow(btn) {
         if (!response.ok) {
             throw new Error(data.detail || 'An error occurred');
         }
-        console.log(data);
         if (data.status === 'unfollowed') {
             btn.setAttribute('data-following', false);
             btn.textContent = 'Follow';
+            if (follow_btn_from_users_list) {
+                follow_btn_from_users_list.setAttribute('data-following', false);
+                follow_btn_from_users_list.textContent = 'Follow'
+            }
         } else if (data.status === 'followed') {
             btn.setAttribute('data-following', true);
             btn.textContent = 'Unfollow';
+            if (follow_btn_from_users_list) {
+                follow_btn_from_users_list.setAttribute('data-following', false);
+                follow_btn_from_users_list.textContent = 'Unfollow'
+            }
         }
 
     } catch (error) {
@@ -153,7 +162,6 @@ async function get_next_users(next_url) {
         if (!response.ok) {
             throw new Error(data.detail || 'An error occurred');
         }
-        console.log(data);
         remove_temp_nav();
         update_users_list(data.results);
         if(data.next) add_temp_nav(data.next);
@@ -189,6 +197,7 @@ function update_users_list(users) {
     for (let user of users) {
         const user_div = document.createElement('div');
         user_div.classList.add('user', 'list-item');
+        user_div.setAttribute('data-user-id', user.id);
         let html_temp = ``;
         let html = `
             <div class="user-avatar">
@@ -219,7 +228,7 @@ contacts_list.addEventListener('click', (e) => {
         const uid = contact.querySelector('.contact-name').getAttribute('user_id');
 
         // update contact data
-        contact_data.contact_id = uid;
+        contact_data.id = uid;
         contact_data.avatar_url = contact.querySelector('img').src;
         contact_data.username = contact.querySelector('.contact-name p').textContent.trim();
 
@@ -230,10 +239,10 @@ contacts_list.addEventListener('click', (e) => {
 
         // close chat socket if one is already open 
         if (currentChatSocket && currentChatSocket.readyState === WebSocket.OPEN) {
-            console.log("Closing exisiting WebSocket connection");
+            console.log("Closing exisiting chat WebSocket connection");
+            is_expected_close = true;
             currentChatSocket.close();
         }
-
         // open websocket and fetch conversation history
         openWebSocket(uid, (conversation_id) => {
             fetch_conversation_history(conversation_id);
@@ -271,16 +280,87 @@ close.addEventListener('click', () => {
     chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 3fr';
 });
 
+function showUserProfile(user_data) {
+    // show profile page
+    new_users_section.style.display = 'none';
+    otherUserProfileSection.style.display = 'grid'
+    profile_data = {
+        id: user_data.user.id,
+        avatar_url: user_data.user.profile.avatar,
+        username: user_data.user.username,
+    }
+    
+    const profile_full_name = document.querySelector('.other-profile-header h3');
+    const profile_avatar = document.querySelector('.other-profile-avatar img');
+    const profile_username = document.querySelector('.other-profile-info-item.username-info p');
+    const profile_email = document.querySelector('.other-profile-info-item.email-info p');
+    const profile_phone_number_div = document.querySelector('.other-profile-info-item.phone-number-info');
+    const profile_phone_number = document.querySelector('.other-profile-info-item.phone-number-info p');
+
+    const profile_bio_div = document.querySelector('.other-profile-info-item.bio-info');
+    const profile_bio = document.querySelector('.other-profile-info-item.bio-info p');
+    const profile_follow_btn = document.querySelector('.other-profile-btns .follow-btn');
+
+
+    
+    profile_full_name.textContent = user_data.user.profile.full_name || user_data.user.username;
+    profile_avatar.src = user_data.user.profile.avatar;
+    profile_username.textContent = '@'+ user_data.user.username;
+    profile_email.textContent = user_data.user.email;
+    
+    // remove phone_number div if phone_number is null
+    profile_phone_number.textContent = user_data.user.profile.phone_number;
+    profile_phone_number_div.style.display = user_data.user.profile.phone_number ? 'flex' : 'none';
+
+    // remove bio div if bio is empty
+    profile_bio.textContent = user_data.user.profile.bio;
+    profile_bio_div.style.display = user_data.user.profile.bio ? 'flex' : 'none';
+
+    profile_follow_btn.setAttribute('data-following', user_data.following);
+    profile_follow_btn.setAttribute('user-id', user_data.user.id);
+    profile_follow_btn.textContent = user_data.following ? 'Unfollow' : 'Follow';
+
+}
+
+
+async function loadUserProfile(user_id) {
+    const url = API_BASE_URL + `users/${user_id}/`;
+    let response = null;
+    try {
+        response = await fetch(url, {'credentials': 'same-origin'});
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || 'An error occurred');
+        }
+        showUserProfile(data);
+
+    } catch (error) {
+        console.error(error.message);
+        if (response && response.status === 401) {
+            await get_token();
+            loadUserProfile(user_id);
+        }
+    }
+
+}
+
+
 
 // follow a user from the find all users section
 // calls the follow_or_unfollow function 
 new_users_list.addEventListener('click', (e) => {
     if (e.target.classList.contains('follow-btn')) {
-        console.log("performing task");
         follow_or_unfollow(e.target);
+    } else if (e.target.closest('.user')) {
+        const user_id = e.target.closest('.user').getAttribute('data-user-id');
+        follow_btn_from_users_list = e.target.closest('.user').children[2];
+        loadUserProfile(user_id);
     }
+
     if (e.target.classList.contains('temp-nav-next')) {
         const next_url = e.target.getAttribute('next-url');
         get_next_users(next_url);  
     }
+
+    
 })

@@ -1,0 +1,93 @@
+/* ------------- PROFILE STYLE STARTS -------------------- */
+.other-profile-section  {
+    grid-template-rows: 30px 1fr 1fr;
+}
+
+.other-profile-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* padding-top: 10px; */
+    height: 100%;
+}
+
+.other-profile-header h3 {
+    color: #4e4e4e;
+    margin-bottom: 0;
+}
+
+.other-profile-header .other-profile-btns {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.other-profile-header .start-chat {
+    cursor: pointer;
+}
+
+.other-profile-header .start-chat:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    perspective: 800px;
+    transform: scale(1.03);
+    transition: transform 0.3s ease;
+}
+
+.other-profile-btns .follow-btn {
+    width: 70px;
+    height: 40px;
+    border: none;
+    border-radius:  5px;
+    background-color: #0084ff;
+    color: #fff;
+    cursor: pointer;
+}
+
+.other-profile-btns .follow-btn:hover {
+    background-color: #0056b3;
+}
+
+.other-profile-avatar-container {
+    width: 100%;
+    position: relative;
+}
+
+.other-profile-avatar {
+    height: 150px;
+    width: 150px;
+    border: 2px solid #4e4e4e;
+    border-radius: 50%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+
+.other-profile-info {
+    padding: 20px;
+    font-size: 13px;
+    color: #4e4e4e;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.other-profile-info-item:last-child {
+    border-bottom: 1px solid #acacac;
+}
+
+.other-profile-info-item {
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid #acacac;
+    width: 100%;
+    align-items: center;
+}
+
+.other-profile-info-item.username-info p {
+    font-style: italic;
+}
+
+/* ------------- PROFILE STYLE ENDS -------------------- */
+

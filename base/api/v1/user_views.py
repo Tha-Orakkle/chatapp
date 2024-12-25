@@ -15,8 +15,20 @@ class UsersView(APIView):
     authentication_classes = [UserTokenAuthentication]
     permission_classes = [IsAuthenticated]
     
-    def get(self, request):
+    def get(self, request, user_id=None):
         """ Return a list of users """
+        if user_id:
+            try:
+                user =  User.objects.get(id=user_id)
+                following_status = request.user.is_following(user)
+            except User.DoesNotExist:
+                return Response({'detail': 'Invalid user ID'}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = UserSerializer(user)
+            return Response({
+                'following': following_status, # true if you follow user
+                'user': serializer.data
+            })
+        
         queryset = User.objects.exclude(id=request.user.id).order_by('username')
         paginator = PNP()
         paginator.page_size = 10

@@ -115,7 +115,6 @@ update_btn.addEventListener('click', (e) => {
             if (!response.ok) {
                 throw new Error();
             }
-            console.log(data)
             update_all_user_data(data.data);
             success.innerHTML = `<p>${data.message}</p>`
             success.style.display = 'block';
@@ -127,7 +126,7 @@ update_btn.addEventListener('click', (e) => {
 
 
         } catch (error) {
-            console.log(data);
+            console.error(data);
 
             if (response.status === 401) {
                 await get_token();

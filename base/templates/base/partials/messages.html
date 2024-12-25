@@ -9,92 +9,58 @@
         </div>
     </div>
     
-
-    <div class="all-conversations scroll-container">
-
-        {% comment %} <div class="favorite-conversations hidden">
-            <h6 class="favorites-header">FAVORITES</h6>
-            <div class="conversation">
-                <div class="conversation-avatar conversation-item"></div>
-                <div class="conversation-info conversation-item">
-                    <p class="conversation-with">Victoria Lane</p>
-                    <p>Hey, How are you doing?</p>
-                </div>
-                <div class="unread-messages">
-                    <p>79</p>
-                </div>
-                <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
-            </div>
-            <div class="conversation">
-                <div class="conversation-avatar conversation-item"></div>
-                <div class="conversation-info conversation-item">
-                    <p class="conversation-with">Peezy Jack</p>
-                    <p>Lorem ipsum dolor sit amet.</p>
-                </div>
-                <div class="unread-messages">
-                    <p>7</p>
-                </div>
-                <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
-            </div>
-            <div class="conversation">
-                <div class="conversation-avatar conversation-item"></div>
-                <div class="conversation-info conversation-item">
-                    <p class="conversation-with">Desmond Elliot</p>
-                    <p>Lorem ipsum dolor sit amet</p>
-                </div>
-                <div class="unread-messages">
-                    <p>7</p>
-                </div>
-                <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
-            </div>
-
-        </div> {% endcomment %}
-
-        <div class="open-conversations-list">
-            <div class="open-conversation-header-wrapper">
-                <h6 class="open-conversation-header">DIRECT MESSAGES</h6>
-                <button class="btn-add start-new-convo">
-                    <img src="{% static 'images/icons/plus.png' %}"
-                        alt="plus icon to start new conversation"
-                        class="start-new-convo-icon">
-                </button>
-            </div>
-            {% comment %} <div class="conversation">
-                <div class="conversation-avatar conversation-item"></div>
-                <div class="conversation-info conversation-item">
-                    <p class="conversation-with">Desmond Elliot</p>
-                    <p>Lorem ipsum dolor sit amet</p>
-                </div>
-                <div class="unread-messages">
-                    <p>7</p>
-                </div>
-                <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
-            </div> {% endcomment %}
-
-            {% if conversations %}
-            
-            {% for conversation in conversations %}
-            <div class="conversation" data-convo-id="{{ conversation.id }}" data-convo-with="{{conversation.conversation_with.id}}">
-                <div class="conversation-avatar conversation-item">
-                    <img src="{{ conversation.conversation_with.profile.avatar.url }}" alt="profile-avatar" class="avatar">
-                </div>
-                <div class="conversation-info conversation-item">
-                    <p class="conversation-with-name">{{ conversation.conversation_with.username }}</p>
-                    <p>{{ conversation.messages.first.body|truncatechars:20 }}</p>
-                </div>
-                <div class="unread-messages">
-                    <p>0</p>
-                </div>
-                {% comment %} <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options"> {% endcomment %}
-            </div>
-            {% endfor %}
-
-
-            {% endif %}
-
-            
-        </div>
+    <div class="open-conversation-header-wrapper">
+        <h6 class="open-conversation-header">DIRECT MESSAGES</h6>
+        <button class="btn-add start-new-convo">
+            <img src="{% static 'images/icons/plus.png' %}"
+                alt="plus icon to start new conversation"
+                class="start-new-convo-icon">
+        </button>
     </div>
+    
+
+    {% comment %} <div class="favorite-conversations hidden">
+        <h6 class="favorites-header">FAVORITES</h6>
+        <div class="conversation">
+            <div class="conversation-avatar conversation-item"></div>
+            <div class="conversation-info conversation-item">
+                <p class="conversation-with">Victoria Lane</p>
+                <p>Hey, How are you doing?</p>
+            </div>
+            <div class="unread-messages">
+                <p>79</p>
+            </div>
+            <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
+        </div>
         
+
+    </div> {% endcomment %}
+
+    <div class="open-conversations-list scroll-container">
+        
+        {% if conversations %}
+        
+        {% for conversation in conversations %}
+        <div class="conversation" data-convo-id="{{ conversation.id }}" data-user-id="{{conversation.conversation_with.id}}">
+            <div class="conversation-avatar conversation-item">
+                <img src="{{ conversation.conversation_with.profile.avatar.url }}" alt="profile-avatar" class="avatar">
+            </div>
+            <div class="conversation-info conversation-item">
+                <p class="conversation-with-name">{{ conversation.conversation_with.username }}</p>
+                <p>{{ conversation.messages.first.body|truncatechars:20 }}</p>
+            </div>
+            <div class="unread-messages">
+                <p>0</p>
+            </div>
+            <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
+        </div>
+        {% endfor %}
+
+
+        {% endif %}
+
+        
+    </div>
 </div>
+        
 

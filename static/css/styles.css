@@ -459,7 +459,7 @@ label {
 .messages-section {
     display: grid;
     /* display: none; */
-    grid-template-rows: 100px 1fr;
+    grid-template-rows: 80px 50px 1fr;
     padding: 20px 15px;
 }
 
@@ -497,30 +497,31 @@ label {
     pointer-events: none;
 }
 
-.all-conversations {
+.open-conversations-list {
     overflow-y: auto;
     /* min-height: inherit; */
 
     padding: 0 5px;
+    /* width: 100%; */
 }
 
-.favorites-header {
+/* .favorites-header {
     margin-top: 0;
-}
+} */
 
 .conversation {
     display: grid;
     align-items: center;
-    margin-right: 20px;
+    /* margin-right: 20px; */
     margin-bottom: 20px;
-    grid-template-columns: 50px 1fr 20px;
+    grid-template-columns: 50px 1fr 20px 10px;
     width: 95%;
     cursor: pointer;
 
 }
 
 .unread-messages {
-    display: none;
+    opacity: 0;
 }
 
 .unread-messages.active {
@@ -531,6 +532,7 @@ label {
     font-weight: bold;
     padding: 5px;
     height: 20px;
+    opacity: 1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -561,10 +563,6 @@ label {
     align-items: center;
     width: 100%;
 }
-h6.open-conversation-header {
-    margin: 0;
-    margin-bottom: 20px;
-}
 
 .btn-add {
     height: 30px;
@@ -589,7 +587,7 @@ h6.open-conversation-header {
 
 .contacts-section {
     padding: 20px 15px;
-    grid-template-rows: 100px 50px 1fr;
+    grid-template-rows: 80px 50px 1fr;
 }
 .contact-header h2 {
     margin: 0;
@@ -677,6 +675,7 @@ h6.open-conversation-header {
     display: grid;
     grid-template-columns: 50px 2fr 1fr;
     align-items: center;
+    cursor: pointer;
     /* border: 1px solid black; */
 }
 
