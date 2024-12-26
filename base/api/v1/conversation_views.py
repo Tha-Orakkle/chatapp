@@ -17,7 +17,7 @@ class ConversationView(APIView):
         """ Returns conversation and the message history """
         try:
             conversation = request.user.conversations.get(id=conversation_id)
-        except Conversation.DoesNotExist as e:
+        except Conversation.DoesNotExist:
             return Response({'detail': 'Invalid conversation id'}, status=status.HTTP_400_BAD_REQUEST)
         messages = conversation.messages.all()
         convo_serializer = ConversationSerializer(conversation)

@@ -261,8 +261,8 @@ async function fetch_conversation_history(conversation_id) {
         scroll_to_bottom();
 
     } catch (error) {
-        console.error(`API Error: ${error.message}`)
-        if (!response.ok) {
+        console.error(error.message)
+        if (response && response.status === 401) {
             await get_token();
             fetch_conversation_history(conversation_id);
         }

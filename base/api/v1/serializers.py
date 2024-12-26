@@ -1,4 +1,6 @@
 from django.core.files.base import ContentFile
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 from io import BytesIO
 from PIL import Image
 from phonenumbers import parse, NumberParseException, is_valid_number
@@ -63,6 +65,7 @@ class MessageSerializer(serializers.ModelSerializer):
     conversation = serializers.SerializerMethodField()
     sender = serializers.SerializerMethodField()
     recipient = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
     
     class Meta:
         model = Message
@@ -76,3 +79,32 @@ class MessageSerializer(serializers.ModelSerializer):
     
     def get_recipient(self, obj):
         return str(obj.recipient.id)
+    
+    def get_created_at(self, obj):
+        """ converts date to human-readable string e.g 5 secs ago... """
+        now = timezone.now()
+        diff = relativedelta(now, obj.created_at)
+        
+        if diff.years >= 1:
+            if diff.years == 1:
+                return f"{diff.years} year ago"
+            return f"{diff.years} years ago"
+        elif diff.months >= 1:
+            if diff.months == 1:
+                return f"{diff.months} month ago"
+            return f"{diff.months} months ago"
+        elif diff.days >= 1:
+            if diff.days == 1:
+                return f"{diff.days} day ago"
+            return f"{diff.days} days ago"
+        elif diff.hours >= 1:
+            if diff.hours == 1:
+                return f"{diff.hours} hour ago"
+            return f"{diff.hours} hours ago"
+        elif diff.minutes >= 1:
+            if diff.minutes == 1:
+                return f"{diff.minutes} min ago"
+            return f"{diff.minutes} mins ago"
+        else:
+            return f"{diff.seconds} secs ago"
+            
