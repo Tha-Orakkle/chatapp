@@ -435,6 +435,37 @@ async function loadUserProfile(user_id) {
 
 }
 
+// deletes a conversation
+async function delete_conversation(conversation_id, conversation) {
+    const url = API_BASE_URL + `conversations/${conversation_id}/`;
+    let response = null;
+    try {
+        response = await fetch(url, {
+            'method': 'DELETE',
+            'credentials': 'same-origin',
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || `An error occurred`);
+        }
+        console.log(data);
+        if (conversation === current_conversation) {
+            chatlog.textContent = '';
+            chat_box_container.style.padding = '20px';
+            chat_box_landing.style.display = 'block';
+            chat_box_content.style.display = 'none';
+            current_conversation = null;
+        }
+        conversation.remove();
+
+    } catch (error) {
+        console.error(error.message);
+        if (response && response.status == 401) {
+            await get_token();
+            delete_conversation(conversation_id, conversation);
+        }
+    }
+}
 
 
 /*
@@ -480,4 +511,10 @@ open_conversation_list.addEventListener('click', (e) => {
         dialog.style.display = 'none';
         loadUserProfile(uid);
     }
+    if (e.target.classList.contains('od-delete')) {
+        const conversation = e.target.closest('.conversation');
+        e.target.parentElement.style.display = 'none';
+        delete_conversation(conversation.getAttribute('data-convo-id'), conversation);
+    }
 })
+

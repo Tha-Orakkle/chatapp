@@ -30,7 +30,7 @@ class ConversationView(APIView):
         
     def delete(self, request, conversation_id):
         """ Deletes a Conversation  """
-        retain = request.GET.get('retain') # if exists delete only messages but not conversation
+        retain = request.GET.get('retain', None) # if exists delete only messages but not conversation
         try:
             conversation = request.user.conversations.get(id=conversation_id)
         except Conversation.DoesNotExist:
