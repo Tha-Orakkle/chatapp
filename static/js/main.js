@@ -8,6 +8,9 @@ let current_conversation = null;
 let contact_data = {};
 let profile_data = {};
 let is_expected_close = false;
+let from_popup_button = false;
+
+
 
 
 const chatapp_main_wrapper = document.querySelector('.chatapp-main-wrapper');
@@ -35,14 +38,14 @@ const chat_box_top_avatar = document.getElementById('chat-box-avatar');
 
 
 /*
- * IIFE for initial websocket connection
+ * CREATES WEBSOCKET THAT LISTENS FOR NOTIFICATIONS
  */
 
 const ws_url = ws_url_prefix + 'chatapp/';
 let reconnectInterval = 1000;
 const maxInterval = 30000;
 
-
+// reconnects web sockets when they close
 const reconnectWebSocket = (type) => {
     setTimeout(() => {
         if (type === 'chatapp') {
@@ -56,7 +59,7 @@ const reconnectWebSocket = (type) => {
     }, reconnectInterval);
 }
 
-
+// opens websocket for the chatapp general - notifications etc
 const chatAppWebSocket = () => {
     let socket = new WebSocket(ws_url);
 
@@ -88,6 +91,7 @@ chatAppWebSocket();
 * Functions
 */
 
+// get new token for API authentication
 async function get_token() {
     console.log(`=========fetching new token===========`);
     const url = API_BASE_URL + `token/`;
@@ -109,6 +113,7 @@ async function get_token() {
     }
 }
 
+// gets cookie esp csrftoken
 function get_cookie(name) {
     let cookie_value = null;
     const cookies = document.cookie.split(';');
@@ -121,17 +126,19 @@ function get_cookie(name) {
     return cookie_value;
 }
 
+// scroll chat box to the bottom after each message
 function scroll_to_bottom() {
     chatlog.scrollTop = chatlog.scrollHeight;
 }
 
+// moves a conversation to the top of the conversations list
 function move_conversation_to_top(conversation=null) {
     conversation = conversation || current_conversation;
     conversation.remove();
     open_conversation_list.insertBefore(conversation, open_conversation_list.firstElementChild);
 }
 
-
+// updates the conversation content esp the last messages displayed
 function update_conversation_content(data, conversation) {
     if (conversation) {
         const unread_messages_count = conversation.querySelector('.unread-messages p');
@@ -183,6 +190,7 @@ function update_conversation_content(data, conversation) {
 
 }
 
+// get or create conversation to move or add to the conversations list (messages)
 function get_or_create_conversation(data=null) {
     let _conversation = null;
     if (data) {
@@ -192,8 +200,10 @@ function get_or_create_conversation(data=null) {
             _conversation.classList.add('conversation');
             _conversation.setAttribute('data-convo-id', data.message.conversation);
             _conversation.setAttribute('data-user-id', data.from.id);
-            _conversation.addEventListener('click', () => {
-                load_chat_box(_conversation);
+            _conversation.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('options') && !e.target.closest('.options-dialog')) {
+                    load_chat_box(_conversation);
+                }
             });
         }
     } else {
@@ -206,7 +216,9 @@ function get_or_create_conversation(data=null) {
             _conversation.setAttribute('data-convo-id', contact_data.convo_id);
             _conversation.setAttribute('data-user-id', contact_data.id);
             _conversation.addEventListener('click', () => {
-                load_chat_box(_conversation);
+                if (!e.target.classList.contains('options') && !e.target.closest('.options-dialog')) {
+                    load_chat_box(_conversation);
+                }
             });
         }
     }
@@ -214,6 +226,7 @@ function get_or_create_conversation(data=null) {
     return _conversation;
 }
 
+// converts each message to html element to be display in the chat box
 function extract_messages_html(message) {
     const chat_message_div = document.createElement('div');
     const user2_id = contact_data.id;
@@ -238,6 +251,7 @@ function extract_messages_html(message) {
     return chat_message_div;
 }
 
+// fetches conversation history 
 async function fetch_conversation_history(conversation_id) {
     const url = API_BASE_URL + `conversations/${conversation_id}/`;
     let response = null;
@@ -269,6 +283,8 @@ async function fetch_conversation_history(conversation_id) {
     }
 }
 
+
+// opens web socket for real-time chat 
 function openWebSocket(uid, callback) {
    // close chat socket if one is already open 
 
@@ -331,7 +347,7 @@ function openWebSocket(uid, callback) {
 
 }
 
-
+// prepares chat box for conversation history
 function load_chat_box(conversation) {
     const unread_messages_div = conversation.querySelector('.unread-messages');
     unread_messages_div.innerHTML = `<p>0</p>`;
@@ -353,6 +369,73 @@ function load_chat_box(conversation) {
     });
 }
 
+// shows the user profile on the right
+function showUserProfile(user_data) {
+    // show profile page
+    chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 2fr 1fr';
+    new_users_section.style.display = 'none';
+    otherUserProfileSection.style.display = 'grid'
+    profile_data = {
+        id: user_data.user.id,
+        avatar_url: user_data.user.profile.avatar,
+        username: user_data.user.username,
+    }
+    
+    const profile_full_name = document.querySelector('.other-profile-header h3');
+    const profile_avatar = document.querySelector('.other-profile-avatar img');
+    const profile_username = document.querySelector('.other-profile-info-item.username-info p');
+    const profile_email = document.querySelector('.other-profile-info-item.email-info p');
+    const profile_phone_number_div = document.querySelector('.other-profile-info-item.phone-number-info');
+    const profile_phone_number = document.querySelector('.other-profile-info-item.phone-number-info p');
+
+    const profile_bio_div = document.querySelector('.other-profile-info-item.bio-info');
+    const profile_bio = document.querySelector('.other-profile-info-item.bio-info p');
+    const profile_follow_btn = document.querySelector('.other-profile-btns .follow-btn');
+
+
+    
+    profile_full_name.textContent = user_data.user.profile.full_name || user_data.user.username;
+    profile_avatar.src = user_data.user.profile.avatar;
+    profile_username.textContent = '@'+ user_data.user.username;
+    profile_email.textContent = user_data.user.email;
+    
+    // remove phone_number div if phone_number is null
+    profile_phone_number.textContent = user_data.user.profile.phone_number;
+    profile_phone_number_div.style.display = user_data.user.profile.phone_number ? 'flex' : 'none';
+
+    // remove bio div if bio is empty
+    profile_bio.textContent = user_data.user.profile.bio;
+    profile_bio_div.style.display = user_data.user.profile.bio ? 'flex' : 'none';
+
+    profile_follow_btn.setAttribute('data-following', user_data.following);
+    profile_follow_btn.setAttribute('user-id', user_data.user.id);
+    profile_follow_btn.textContent = user_data.following ? 'Unfollow' : 'Follow';
+
+}
+
+// fetches user details
+async function loadUserProfile(user_id) {
+    const url = API_BASE_URL + `users/${user_id}/`;
+    let response = null;
+    try {
+        response = await fetch(url, {'credentials': 'same-origin'});
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || 'An error occurred');
+        }
+        showUserProfile(data);
+
+    } catch (error) {
+        console.error(error.message);
+        if (response && response.status === 401) {
+            await get_token();
+            loadUserProfile(user_id);
+        }
+    }
+
+}
+
+
 
 /*
 * Event Listeners
@@ -369,7 +452,32 @@ scroll_containers.forEach(scroll_container => {
 });
 
 conversations.forEach(conversation => {
-    conversation.addEventListener('click', () => {
-        load_chat_box(conversation); 
+    conversation.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('options') && !e.target.closest('.options-dialog')) {
+            load_chat_box(conversation); 
+        }
     })
+})
+
+
+open_conversation_list.addEventListener('click', (e) => {
+
+    if (e.target.classList.contains('options')) {
+        const all_dialogs = document.querySelectorAll('.options-dialog');
+        const dialog = e.target.nextElementSibling;
+
+        all_dialogs.forEach(d => {
+            if (d !== dialog) {
+                d.style.display = 'none';
+            }
+        });
+        dialog.style.display = dialog.style.display === 'block' ? 'none' : 'block';
+    }
+    if (e.target.classList.contains('od-profile')) {
+        from_popup_button = true;
+        const dialog = e.target.parentElement;
+        const uid = dialog.parentElement.getAttribute('data-user-id');
+        dialog.style.display = 'none';
+        loadUserProfile(uid);
+    }
 })

@@ -86,7 +86,6 @@ async function get_following_ids() {
     }
 }
 
-
 // gets new users for the find new users section 
 async function get_users() {
     const url = API_BASE_URL + 'users/';
@@ -217,11 +216,11 @@ function update_users_list(users) {
     }
 }
 
-
 /*
 * Event Listeners
 */
 
+// open chat box for any contact clicked on
 contacts_list.addEventListener('click', (e) => {
     const contact = e.target.closest('.contact');
     if (contact) {
@@ -279,71 +278,6 @@ close.addEventListener('click', () => {
     new_users_section.style.display = 'none';
     chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 3fr';
 });
-
-function showUserProfile(user_data) {
-    // show profile page
-    chatapp_main_wrapper.style.gridTemplateColumns = '100px 1fr 2fr 1fr';
-    new_users_section.style.display = 'none';
-    otherUserProfileSection.style.display = 'grid'
-    profile_data = {
-        id: user_data.user.id,
-        avatar_url: user_data.user.profile.avatar,
-        username: user_data.user.username,
-    }
-    
-    const profile_full_name = document.querySelector('.other-profile-header h3');
-    const profile_avatar = document.querySelector('.other-profile-avatar img');
-    const profile_username = document.querySelector('.other-profile-info-item.username-info p');
-    const profile_email = document.querySelector('.other-profile-info-item.email-info p');
-    const profile_phone_number_div = document.querySelector('.other-profile-info-item.phone-number-info');
-    const profile_phone_number = document.querySelector('.other-profile-info-item.phone-number-info p');
-
-    const profile_bio_div = document.querySelector('.other-profile-info-item.bio-info');
-    const profile_bio = document.querySelector('.other-profile-info-item.bio-info p');
-    const profile_follow_btn = document.querySelector('.other-profile-btns .follow-btn');
-
-
-    
-    profile_full_name.textContent = user_data.user.profile.full_name || user_data.user.username;
-    profile_avatar.src = user_data.user.profile.avatar;
-    profile_username.textContent = '@'+ user_data.user.username;
-    profile_email.textContent = user_data.user.email;
-    
-    // remove phone_number div if phone_number is null
-    profile_phone_number.textContent = user_data.user.profile.phone_number;
-    profile_phone_number_div.style.display = user_data.user.profile.phone_number ? 'flex' : 'none';
-
-    // remove bio div if bio is empty
-    profile_bio.textContent = user_data.user.profile.bio;
-    profile_bio_div.style.display = user_data.user.profile.bio ? 'flex' : 'none';
-
-    profile_follow_btn.setAttribute('data-following', user_data.following);
-    profile_follow_btn.setAttribute('user-id', user_data.user.id);
-    profile_follow_btn.textContent = user_data.following ? 'Unfollow' : 'Follow';
-
-}
-
-
-async function loadUserProfile(user_id) {
-    const url = API_BASE_URL + `users/${user_id}/`;
-    let response = null;
-    try {
-        response = await fetch(url, {'credentials': 'same-origin'});
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.detail || 'An error occurred');
-        }
-        showUserProfile(data);
-
-    } catch (error) {
-        console.error(error.message);
-        if (response && response.status === 401) {
-            await get_token();
-            loadUserProfile(user_id);
-        }
-    }
-
-}
 
 
 
