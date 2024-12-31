@@ -164,7 +164,13 @@ function update_conversation_content(data, conversation) {
                     <p>0</p>
                 </div>`
             }
-            conversation.innerHTML += `<img src="static/images/icons/options.png" alt="options-icon" class="options">`
+            conversation.innerHTML += `
+            <img src="static/images/icons/options.png" alt="options-icon" class="options">
+            <div class="options-dialog">
+                <button class="od-profile">Profile</button>
+                <button class="od-delete">Delete Conversation</button>
+            </div>
+            `
     } else {
         if (current_conversation && !current_conversation.firstElementChild) {
             current_conversation.innerHTML = `
@@ -181,6 +187,10 @@ function update_conversation_content(data, conversation) {
                     <p>0</p>
                 </div>
                 <img src="static/images/icons/options.png" alt="options-icon" class="options">
+                <div class="options-dialog">
+                <button class="od-profile">Profile</button>
+                <button class="od-delete">Delete Conversation</button>
+                </div>
                 `
         } else {
             const msg_p = current_conversation.querySelector('.conversation-info p:last-child');
@@ -494,7 +504,7 @@ conversations.forEach(conversation => {
 open_conversation_list.addEventListener('click', (e) => {
 
     if (e.target.classList.contains('options')) {
-        const all_dialogs = document.querySelectorAll('.options-dialog');
+        const all_dialogs = open_conversation_list.querySelectorAll('.options-dialog');
         const dialog = e.target.nextElementSibling;
 
         all_dialogs.forEach(d => {

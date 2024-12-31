@@ -26,14 +26,18 @@ function update_contacts_list(contacts) {
     for (let contact of contacts) {
         const contact_div = document.createElement('div');
         contact_div.classList.add('contact');
+        contact_div.setAttribute('data-user-id', contact.id);
         contact_div.innerHTML = `
             <div class="contact-avatar">
                 <img src="${contact.profile.avatar}" class="avatar">
             </div>
-            <div class="contact-name" user_id="${contact.id}">
+            <div class="contact-name" data-user-id="${contact.id}">
                 <p>${contact.username}</p>
             </div>
             <img src="static/images/icons/options.png" alt="options-icon" class="options">
+            <div class="options-dialog">
+                <button class="od-profile">Profile</button>
+            </div>
         `;
         contacts_list.appendChild(contact_div);
     }
@@ -222,30 +226,50 @@ function update_users_list(users) {
 
 // open chat box for any contact clicked on
 contacts_list.addEventListener('click', (e) => {
-    const contact = e.target.closest('.contact');
-    if (contact) {
-        const uid = contact.querySelector('.contact-name').getAttribute('user_id');
-
-        // update contact data
-        contact_data.id = uid;
-        contact_data.avatar_url = contact.querySelector('img').src;
-        contact_data.username = contact.querySelector('.contact-name p').textContent.trim();
-
-        // restructure interface and present chatbox
-        chat_box_container.style.padding = '0';
-        chat_box_landing.style.display = 'none';
-        chat_box_content.style.display = 'grid';
-
-        // close chat socket if one is already open 
-        if (currentChatSocket && currentChatSocket.readyState === WebSocket.OPEN) {
-            console.log("Closing exisiting chat WebSocket connection");
-            is_expected_close = true;
-            currentChatSocket.close();
+    if (!e.target.classList.contains('options') && !e.target.closest('.options-dialog')) {
+        const contact = e.target.closest('.contact');
+        if (contact) {
+            const uid = contact.getAttribute('data-user-id');
+    
+            // update contact data
+            contact_data.id = uid;
+            contact_data.avatar_url = contact.querySelector('img').src;
+            contact_data.username = contact.querySelector('.contact-name p').textContent.trim();
+    
+            // restructure interface and present chatbox
+            chat_box_container.style.padding = '0';
+            chat_box_landing.style.display = 'none';
+            chat_box_content.style.display = 'grid';
+    
+            // close chat socket if one is already open 
+            if (currentChatSocket && currentChatSocket.readyState === WebSocket.OPEN) {
+                console.log("Closing exisiting chat WebSocket connection");
+                is_expected_close = true;
+                currentChatSocket.close();
+            }
+            // open websocket and fetch conversation history
+            openWebSocket(uid, (conversation_id) => {
+                fetch_conversation_history(conversation_id);
+            });
         }
-        // open websocket and fetch conversation history
-        openWebSocket(uid, (conversation_id) => {
-            fetch_conversation_history(conversation_id);
-        });
+    }
+    if (e.target.classList.contains('options')) {
+        const dialog = e.target.nextElementSibling;
+        const all_dialogs = contacts_list.querySelectorAll('.options-dialog');
+
+        all_dialogs.forEach(d => {
+            if (d !== dialog) {
+                d.style.display = 'none';
+            }
+        })
+        dialog.style.display = dialog.style.display == 'block' ? 'none' : 'block';
+    }
+    if (e.target.classList.contains('od-profile')) {
+        from_popup_button = true;
+        const dialog = e.target.parentElement;
+        const uid = dialog.parentElement.getAttribute('data-user-id');
+        dialog.style.display = 'none';
+        loadUserProfile(uid);
     }
 })
 
