@@ -255,7 +255,7 @@ contacts_list.addEventListener('click', (e) => {
     }
     if (e.target.classList.contains('options')) {
         const dialog = e.target.nextElementSibling;
-        const all_dialogs = contacts_list.querySelectorAll('.options-dialog');
+        const all_dialogs = document.querySelectorAll('.options-dialog');
 
         all_dialogs.forEach(d => {
             if (d !== dialog) {

@@ -6,7 +6,8 @@
 const chat_submit_button = document.querySelector('.chat-box-input button');
 const user_message_input = document.getElementById('user-message-input');
 const chat_box_top_options = document.querySelector('.chat-top-options-icon');
-const chat_box_top_popup = document.querySelector('.chat-box-popup');
+
+const chat_box_top_popup = document.querySelector('.chat-box-top-bar .options-dialog');
 const popup_profile_btn = document.querySelector('#popup-profile-btn');
 const popup_clear_chat_btn = document.querySelector('#popup-clear-chat');
 const clear_chat_overlay = document.querySelector('.popup.clear-chat.overlay');
@@ -51,29 +52,36 @@ user_message_input.onkeyup = function (e) {
 }
 
 
-chat_box_top_options.addEventListener('click', () => {
-    if (chat_box_top_popup.style.visibility === 'hidden') {
-        chat_box_top_popup.style.visibility = 'visible';
-    } else {
-        chat_box_top_popup.style.visibility = 'hidden';
-    }
+chat_box_top_options.addEventListener('click', (e) => {
+    const dialog = e.target.nextElementSibling;
+    const all_dialogs = document.querySelectorAll('.options-dialog');
+
+    all_dialogs.forEach(d => {
+        if (d !== dialog){
+            d.style.display = 'none';
+        }
+    })
+    dialog.style.right = `${e.target.offsetWidth + 20}px`;
+    dialog.style.top = '10px';
+    dialog.style.display = dialog.style.display === 'block' ? 'none' : 'block';
 });
 
 
 popup_profile_btn.addEventListener('click', () => {
     from_popup_button = true;
-    chat_box_top_popup.style.visibility = 'hidden';
+    popup_profile_btn.parentElement.style.display = 'none'
     loadUserProfile(contact_data.id);
 });
 
 popup_clear_chat_btn.addEventListener('click', () => {
-    chat_box_top_popup.style.visibility = 'hidden';
+    popup_clear_chat_btn.parentElement.style.display = 'none'
     clear_chat_overlay.style.visibility = 'visible';
 });
 
 clear_chat_no.addEventListener('click', () => {
     clear_chat_overlay.style.visibility = 'hidden';
 });
+
 
 
 clear_chat_yes.addEventListener('click', () => {
@@ -109,6 +117,27 @@ clear_chat_yes.addEventListener('click', () => {
     clear_conversation();
     const conversation = document.querySelector(`[data-convo-id="${convo_id}"]`);
     conversation.querySelector('.conversation-info p:last-child').textContent = '';
+})
 
 
+chatlog.addEventListener('click', (e) => {
+    if (e.target.classList.contains('options')) {
+        let dialog = null;
+        if (e.target.nextElementSibling.classList.contains('options-dialog')) {
+            dialog = e.target.nextElementSibling;
+            const width = e.target.previousElementSibling.offsetWidth + 20;
+            dialog.style.left = `${width}px`;
+        } else {
+            dialog = e.target.previousElementSibling;
+            const width = e.target.nextElementSibling.offsetWidth + 20;
+            dialog.style.right = `${width}px`;
+        }
+
+        const all_dialogs = document.querySelectorAll('.options-dialog');
+        all_dialogs.forEach(d => {
+            if (d !== dialog) {d.style.display = 'none';}
+        })
+
+        dialog.style.display = dialog.style.display === 'block' ? 'none' : 'block';
+    }
 })

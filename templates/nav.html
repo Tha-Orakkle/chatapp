@@ -42,13 +42,17 @@
         </div>
     </div>
     <div class="nav-item nav-avatar">
-        <div class="profile-avatar-quick-menu">
+        <div class="profile-avatar-options">
             <img src="{{ request.user.profile.avatar.url }}" alt="" class="avatar account-user">
         </div>
-        <div class="popup profile-popup">
+        <div class="options-dialog">
+            <button>profile</button>
+            <button>logout</button=>
+        </div>
+        <!-- <div class="popup profile-popup">
                 <p>Profile</p>
                 <a href="{% url 'logout' %}">logout</a>
-        </div>
+        </div> -->
     </div>
     
 </div>

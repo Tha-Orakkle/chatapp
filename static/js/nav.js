@@ -9,7 +9,7 @@ const mesagesSection = document.querySelector('.messages-section');
 const contactSection = document.querySelector('.contacts-section');
 const bookmarkSection = document.querySelector('.bookmark-section');
 
-const profileBtn = document.querySelector('.profile-avatar-quick-menu');
+const profileBtn = document.querySelector('.profile-avatar-options');
 const profilePopup = document.querySelector('.profile-popup');
 
 
@@ -54,10 +54,25 @@ bookmarkNav.addEventListener('click', () => {
 })
 
 
-profileBtn.addEventListener('click', () => {
-    if (profilePopup.style.visibility === 'hidden') {
-        profilePopup.style.visibility = 'visible';
-    } else {
-        profilePopup.style.visibility = 'hidden';
-    }
+profileBtn.addEventListener('click', (e) => {
+    const dialog = profileBtn.nextElementSibling;
+    const all_dialogs = document.querySelectorAll('.options-dialog');
+
+    all_dialogs.forEach(d => {
+        if (d !== dialog) {
+            d.style.display = 'none';
+        }
+    });
+    dialog.style.left = `70%`;
+    dialog.style.width = '100px';
+    dialog.style.display = dialog.style.display === 'block' ? 'none' : 'block';
+
 });
+
+const nav_avatar_options = document.querySelector('.nav-item.nav-avatar .options-dialog')
+
+nav_avatar_options.addEventListener('click', (e) => {
+    if (e.target === nav_avatar_options.lastElementChild) {
+        window.location.href = '/logout';
+    }
+})

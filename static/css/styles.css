@@ -344,7 +344,7 @@ label {
     padding-bottom: 30px;
 }
 
-.profile-avatar-quick-menu {
+.profile-avatar-options {
     height: 40px;
     width: 40px;
     border: 2px solid white;
@@ -395,7 +395,7 @@ label {
     position: relative;
 }
 
-.profile-popup {
+/* .profile-popup {
     width: 100px;
     border: 1px solid #ccc;
     background-color: #e4e6eb;
@@ -421,7 +421,7 @@ label {
 .profile-popup > a {
     text-decoration: none;
     color: black;
-}
+} */
 
 /* --- NAV END ---- */
 
@@ -798,8 +798,8 @@ label {
 }
 
 
-.chat-box-popup {
-    /* visibility: hidden; */
+/* .chat-box-popup {
+    visibility: hidden;
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -819,7 +819,7 @@ label {
     font-family: inherit; 
     background-color: transparent;
     cursor: pointer;
-}
+} */
 
 .clear-chat.overlay {
     position: fixed;
@@ -889,6 +889,7 @@ label {
 }
 
 .chat-message {
+    position: relative;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -1021,5 +1022,4 @@ label {
 
 
 /* ----TEST--- */
-
 

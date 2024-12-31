@@ -225,7 +225,7 @@ function get_or_create_conversation(data=null) {
             _conversation.classList.add('conversation');
             _conversation.setAttribute('data-convo-id', contact_data.convo_id);
             _conversation.setAttribute('data-user-id', contact_data.id);
-            _conversation.addEventListener('click', () => {
+            _conversation.addEventListener('click', (e) => {
                 if (!e.target.classList.contains('options') && !e.target.closest('.options-dialog')) {
                     load_chat_box(_conversation);
                 }
@@ -248,10 +248,18 @@ function extract_messages_html(message) {
         html = `
         <p>${message.body}</p>
         <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
+         <div class="options-dialog">
+            <button class="od-boomark">Bookmark</button>
+            <button class="od-delete-msg">Delete Message</button>
+        </div>
         <span>${message.created_at}</span>`;
     } else {
         chat_message_div.classList.add('sent')
         html = `
+        <div class="options-dialog">
+            <button class="od-boomark">Bookmark</button>
+            <button class="od-delete-msg">Delete Message</button>
+        </div>
         <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
         <p>${message.body}</p>
         <span>${message.created_at}</span>`;
@@ -334,10 +342,18 @@ function openWebSocket(uid, callback) {
                 html = `
                 <p>${data.message.body}</p>
                 <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
+                <div class="options-dialog">
+                    <button class="od-boomark">Bookmark</button>
+                    <button class="od-delete-msg">Delete Message</button>
+                </div>
                 <span>${data.message.created_at}</span>`
             } else {
                 new_message_div.classList.add('chat-message', 'sent');
                 html = `
+                <div class="options-dialog">
+                    <button class="od-boomark">Bookmark</button>
+                    <button class="od-delete-msg">Delete Message</button>
+                </div>
                 <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
                 <p>${data.message.body}</p>
                 <span>${data.message.created_at}</span>`
@@ -504,7 +520,7 @@ conversations.forEach(conversation => {
 open_conversation_list.addEventListener('click', (e) => {
 
     if (e.target.classList.contains('options')) {
-        const all_dialogs = open_conversation_list.querySelectorAll('.options-dialog');
+        const all_dialogs = document.querySelectorAll('.options-dialog');
         const dialog = e.target.nextElementSibling;
 
         all_dialogs.forEach(d => {
@@ -527,4 +543,3 @@ open_conversation_list.addEventListener('click', (e) => {
         delete_conversation(conversation.getAttribute('data-convo-id'), conversation);
     }
 })
-
