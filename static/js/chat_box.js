@@ -120,7 +120,7 @@ clear_chat_yes.addEventListener('click', () => {
 })
 
 
-chatlog.addEventListener('click', (e) => {
+chatlog.addEventListener('click', async (e) => {
     if (e.target.classList.contains('options')) {
         let dialog = null;
         if (e.target.nextElementSibling.classList.contains('options-dialog')) {
@@ -140,4 +140,64 @@ chatlog.addEventListener('click', (e) => {
 
         dialog.style.display = dialog.style.display === 'block' ? 'none' : 'block';
     }
+
+    if (e.target.closest('.options-dialog')) {
+        const message_div = e.target.closest('.chat-message');
+        e.target.closest('.options-dialog').style.display = 'none';
+        if (e.target.classList.contains('od-delete-msg')) {
+            show_delete_message_popup(message_div);
+        }
+    }
+    if (e.target.closest('.delete-msg.overlay')) {
+        const overlay = e.target.closest('.delete-msg.overlay');
+        if (e.target.id === 'delete-msg-yes') {
+            const message_div = e.target.closest('.chat-message');
+            overlay.style.visibility = 'hidden';
+            const deleted = await delete_message(message_div.getAttribute('data-message-id'));
+            if (deleted) {
+                if (message_div === chatlog.lastElementChild) {
+                    message_div.remove();
+                    const ms_p = chatlog.lastElementChild.querySelector(':scope > p');
+                    current_conversation.querySelector('.conversation-info').lastElementChild.textContent = ms_p.textContent;
+                } else {
+                    message_div.remove();
+                }
+            }
+
+        } else if (e.target.id === 'delete-msg-no') {
+            overlay.style.visibility = 'hidden';
+        } else if (!e.target.closest('.delete-msg.response')) {
+            overlay.style.visibility = 'hidden';
+        }
+    }
 })
+
+function show_delete_message_popup(message_div) {
+    const message_popup_overlay = message_div.lastElementChild;
+    message_popup_overlay.style.visibility = 'visible';
+}
+
+async function delete_message(message_id) {
+    const url = API_BASE_URL + `conversation/${contact_data.convo_id}/message/${message_id}/`;
+    let response = null;
+    let deleted = false;
+    try {
+        response = await fetch(url, {
+            'method': 'DELETE',
+            'credentials': 'same-origin'
+        })
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || `An error occurred`);
+        }
+        console.log(data);
+        deleted = true
+    } catch (error) {
+        console.error(error.message);
+        if (response && response.status === 401) {
+            await get_token();
+            delete_message(message_id);
+        }
+    }
+    return deleted;
+}

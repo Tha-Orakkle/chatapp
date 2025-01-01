@@ -897,7 +897,7 @@ label {
     margin-bottom: 10px;
 }
 
-.chat-message p {
+.chat-message > p {
     padding : 10px;
     border-radius: 10px;
     margin: 0;
@@ -909,7 +909,7 @@ label {
     justify-content: end;
 }
 
-.chat-message.sent p {
+.chat-message.sent > p {
     background-color: #0084ff;
     color: white;
 }
@@ -917,7 +917,7 @@ label {
 .chat-message.received {
     justify-content: start;
 }
-.chat-message.received p {
+.chat-message.received > p {
     background-color: #e4e6eb;
     color: black;
 }
@@ -1023,3 +1023,48 @@ label {
 
 /* ----TEST--- */
 
+.delete-msg.overlay {
+    position: fixed;
+    z-index: 9;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-delete-msg {
+    width: 25%;
+    height: 13%;
+    overflow-y: auto;
+    border: 1px solid #888;
+    border-radius: 5px;
+    padding: 10px 10px;
+    background-color: #f7f7f7;
+    color: #888;
+}
+
+.popup-delete-msg p {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.popup-delete-msg .delete-msg-response {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.delete-msg-response > * {
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    color: #0084ff;
+    font-family: inherit;
+    /* font-size: 13px; */
+    background-color: transparent;
+}

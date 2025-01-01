@@ -242,6 +242,7 @@ function extract_messages_html(message) {
     const user2_id = contact_data.id;
 
     chat_message_div.classList.add('chat-message');
+    chat_message_div.setAttribute('data-message-id', message.id);
     let html = ``;
     if (message.sender === user2_id) {
         chat_message_div.classList.add('received');
@@ -252,7 +253,16 @@ function extract_messages_html(message) {
             <button class="od-boomark">Bookmark</button>
             <button class="od-delete-msg">Delete Message</button>
         </div>
-        <span>${message.created_at}</span>`;
+        <span>${message.created_at}</span>
+        <div class="popup delete-msg overlay">
+            <div class="popup-delete-msg scroll-container"> 
+                <p>Delete message?</p>
+                <div class="delete-msg-response">
+                    <button id="delete-msg-yes">yes</button>
+                    <button id="delete-msg-no">no</button>
+                </div>
+            </div>
+        </div>`;
     } else {
         chat_message_div.classList.add('sent')
         html = `
@@ -262,7 +272,16 @@ function extract_messages_html(message) {
         </div>
         <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
         <p>${message.body}</p>
-        <span>${message.created_at}</span>`;
+        <span>${message.created_at}</span>
+        <div class="popup delete-msg overlay">
+            <div class="popup-delete-msg scroll-container"> 
+                <p>Delete message?</p>
+                <div class="delete-msg-response">
+                    <button id="delete-msg-yes">yes</button>
+                    <button id="delete-msg-no">no</button>
+                </div>
+            </div>
+        </div>`;
     }
     chat_message_div.innerHTML = html;
 
@@ -333,6 +352,7 @@ function openWebSocket(uid, callback) {
             user_message_input.value = '';
 
             const new_message_div = document.createElement('div');
+            new_message_div.setAttribute('data-message-id', data.message.id);
 
             const user2_id = contact_data.id
             console.log(data);
@@ -346,7 +366,16 @@ function openWebSocket(uid, callback) {
                     <button class="od-boomark">Bookmark</button>
                     <button class="od-delete-msg">Delete Message</button>
                 </div>
-                <span>${data.message.created_at}</span>`
+                <span>${data.message.created_at}</span>
+                <div class="popup delete-msg overlay">
+                    <div class="popup-delete-msg scroll-container"> 
+                        <p>Delete message?</p>
+                        <div class="delete-msg-response">
+                            <button id="delete-msg-yes">yes</button>
+                            <button id="delete-msg-no">no</button>
+                        </div>
+                    </div>
+                </div>`;
             } else {
                 new_message_div.classList.add('chat-message', 'sent');
                 html = `
@@ -356,7 +385,16 @@ function openWebSocket(uid, callback) {
                 </div>
                 <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
                 <p>${data.message.body}</p>
-                <span>${data.message.created_at}</span>`
+                <span>${data.message.created_at}</span>
+                <div class="popup delete-msg overlay">
+                    <div class="popup-delete-msg scroll-container"> 
+                        <p>Delete message?</p>
+                        <div class="delete-msg-response">
+                            <button id="delete-msg-yes">yes</button>
+                            <button id="delete-msg-no">no</button>
+                        </div>
+                    </div>
+                </div>`;
             }
             
             // add new message to chat box
@@ -543,3 +581,14 @@ open_conversation_list.addEventListener('click', (e) => {
         delete_conversation(conversation.getAttribute('data-convo-id'), conversation);
     }
 })
+
+
+// give all img-options class of "options" and ensure they all disappear when document is clicked
+// document.addEventListener('click', (e) => {
+//     if (!e.target.closest('.options-dialog') || !e.target.classList.contains('.options')) {
+//         const all_dialogs = document.querySelectorAll('.options-dialog');
+//         all_dialogs.forEach(d => {
+//             d.style.display = 'none';
+//         });
+//     }
+// });

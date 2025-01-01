@@ -78,12 +78,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         if text_data_json['type'] == 'chat_message':    
             data = {'body': text_data_json['body']}
-            message, message2 = await self.create_message(data)
+            message1, message2 = await self.create_message(data)
             
             await self.channel_layer.group_send(
                 self.room_group_name, {
                 'type': 'send_message',
-                'message': message,
+                'message1': message1,
+                'message2': message2,
             })
             
             print(f"OTHER_USER_ID: {str(self.other_user.id)}")            
@@ -137,7 +138,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return {'message': MessageSerializer(message).data}
     
     async def send_message(self, event):
-        serialized_data = await self.get_message_serialized_data(event['message'])
+        message = event['message1'] if event['message1'].conversation.user == self.user else event['message2']
+        serialized_data = await self.get_message_serialized_data(message)
         await self.send(text_data=json.dumps({
             'type': 'chat_message',
             **serialized_data
