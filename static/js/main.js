@@ -583,12 +583,13 @@ open_conversation_list.addEventListener('click', (e) => {
 })
 
 
-// give all img-options class of "options" and ensure they all disappear when document is clicked
-// document.addEventListener('click', (e) => {
-//     if (!e.target.closest('.options-dialog') || !e.target.classList.contains('.options')) {
-//         const all_dialogs = document.querySelectorAll('.options-dialog');
-//         all_dialogs.forEach(d => {
-//             d.style.display = 'none';
-//         });
-//     }
-// });
+// removes all options-dialogs
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.options-dialog') && !e.target.closest('.profile-avatar-options') &&
+        !e.target.classList.contains('options') && !e.target.classList.contains('chat-top-options-icon')) {
+        const all_dialogs = document.querySelectorAll('.options-dialog');
+        all_dialogs.forEach(d => {
+            d.style.display = 'none';
+        });
+    }
+});
