@@ -46,6 +46,8 @@ class UserProfileForm(forms.ModelForm):
                     raise forms.ValidationError("The phone number is not valid.")
             except NumberParseException:
                 raise forms.ValidationError("Invalid phone number format")
+        else:
+            phone = ''
         return phone
         
     def clean_avatar(self):

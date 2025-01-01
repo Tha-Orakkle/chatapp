@@ -16,13 +16,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     def validate_phone_number(self, value):
         """ Validates phone number """
-        try:
-            region = getattr(settings, 'PHONENUMBER_DEFAULT_REGION', None)
-            parsed_number = parse(str(value), region)
-            if not is_valid_number(parsed_number):
-                return serializers.ValidationError("Invalid phone number")
-        except NumberParseException as e:
-            raise serializers.ValidationError("Invalid phone number format")
+        if value:
+            try:
+                region = getattr(settings, 'PHONENUMBER_DEFAULT_REGION', None)
+                parsed_number = parse(str(value), region)
+                if not is_valid_number(parsed_number):
+                    return serializers.ValidationError("Invalid phone number")
+            except NumberParseException as e:
+                raise serializers.ValidationError("Invalid phone number format")
         return value
     
     def validate_avatar(self, value):
@@ -69,7 +70,7 @@ class MessageSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Message
-        fields = '__all__' # expecting error for sender serialization
+        fields = '__all__'
         
     def get_conversation(self, obj):
         return str(obj.conversation.id)

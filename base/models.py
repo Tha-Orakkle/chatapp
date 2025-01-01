@@ -57,7 +57,8 @@ class UserProfile(models.Model):
     full_name = models.CharField(max_length=68, default="", blank=True)
     bio = models.TextField(default="", blank=True)
     # bio = models.CharField(max_length=158, default="", blank=True)
-    phone_number = PhoneNumberField(unique=True, null=True, blank=True)
+    phone_number = PhoneNumberField(null=True, blank=True)
+    registration_complete = models.BooleanField(default=False, null=False)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='profile')
 

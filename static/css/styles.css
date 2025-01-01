@@ -105,9 +105,14 @@ body {
     margin: 50px auto 70px;
 }
 
-/* .register-user-profile-content {
-    margin-bottom: 40px;
-} */
+#register-user-profile > p{
+    text-align: center;
+    margin: 0;
+}
+
+#register-user-profile > p span {
+    font-style: italic;
+}
 
 .register-login-header {
     margin-top: 20px;
@@ -226,6 +231,11 @@ label {
 /* ---------LOGIN AND REGISTRATION STYLE END ------------- */
 
 /* ---------USER PROFILE REGISTRATION STYLE START ------------- */
+
+.register-user-profile-form {
+    margin-top: 30px;
+}
+
 .form-avatar {
     height: 120px;
     width: 120px;
@@ -274,29 +284,15 @@ label {
 .form-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 0 20px;
 }
 
-.btn {
+.btn-continue {
     cursor: pointer;
     border: none;
     font-size: 16px;
     font-family: inherit;
-}
-
-.btn.skip {
-    background: none;
-    color: #0084ff;
-    transition: font 0.3s ease, transform 0.2s ease;
-}
-.btn.skip:hover {
-    color: #0056b3;
-    font-weight: bold;
-    transform: scale(1.07);
-}
-
-.btn.continue {
     border-radius: 5px;
     padding: 10px 20px;
     color: #fff;
@@ -304,12 +300,32 @@ label {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-
-
-.btn.continue:hover {
+.btn-continue:hover {
     background-color: #0056b3;
     transform: scale(1.05);
 }
+
+.disabled {
+    background-color: #ccc;
+    color: #666;
+    border: 1px solid #aaa;
+    pointer-events: none;
+}
+
+
+/* 
+.btn.skip {
+    background: none;
+    color: #0084ff;
+    transition: font 0.3s ease, transform 0.2s ease;
+} */
+/* .btn.skip:hover {
+    color: #0056b3;
+    font-weight: bold;
+    transform: scale(1.07);
+} */
+
+
 
 /* ---------USER PROFILE REGISTRATION STYLE END ------------- */
 
@@ -495,7 +511,7 @@ label {
 .conversation {
     display: grid;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     grid-template-columns: 50px 1fr 20px 10px;
     width: 95%;
     cursor: pointer;

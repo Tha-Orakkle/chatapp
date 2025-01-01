@@ -44,8 +44,8 @@ function update_all_user_data(data) {
     profile_name.textContent = data.profile.full_name;
     profile_username.textContent = '@' + data.username;
     profile_email.textContent = data.email;
-    profile_phone_number.textContent = data.profile.phone_number;
-    profile_bio.textContent = data.profile.bio;
+    profile_phone_number.textContent = data.profile.phone_number ? data.profile.phone_number : 'Enter tel...';
+    profile_bio.textContent = data.profile.bio ? data.profile.bio : 'Say something about yourself...';
 }
 
 
@@ -95,8 +95,10 @@ update_btn.addEventListener('click', (e) => {
     if (username) form_data.append('username', username);
     if (email) form_data.append('email', email);
     if (full_name) form_data.append('full_name', full_name);
-    if (phone_number) form_data.append('phone_number', phone_number);
-    if (bio) form_data.append('bio', bio);
+    // if (phone_number) form_data.append('phone_number', phone_number);
+    form_data.append('phone_number', phone_number);
+    form_data.append('bio', bio);
+    // if (bio) form_data.append('bio', bio);
     let response = null;
     let data = null
 

@@ -7,6 +7,7 @@
 <div class="register-login-container">
 
     <div class="register-user-profile-content" id="register-user-profile">
+        <p><span>@{{ request.user.username }}, </span>complete registration to continue...</p>
         <div class="register-user-profile-form">
             <form action="" method="post" enctype="multipart/form-data" id="user-profile-form">
                 {% csrf_token %}
@@ -58,9 +59,11 @@
                     {% endif %}
                 </div>
                 <div class="form-footer">
-                    <button class="btn skip">skip</button>
-                    <input type="submit" value="continue" id="continue" class="btn continue">
-                    <!-- <button id="continue">Continue</button> -->
+                    {% comment %} <button class="btn skip">skip</button> {% endcomment %}
+                    <div class="btn">
+                        <input type="submit" value="continue" id="continue" class="btn-continue disabled">
+                    </div>
+                        <!-- <button id="continue">Continue</button> -->
                 </div>
 
             </form>
@@ -72,33 +75,31 @@
 
 {% block scripts %}
 <script>
-    // const fullName = document.querySelector('.form-item.full_name input');
+    const fullName = document.querySelector('.form-item.full_name input');
     const fileInput = document.querySelector('.form-avatar input');
+    const btn = document.querySelector('.form-footer .btn')
     const btnContinue =  document.querySelector('.form-footer input');
     const btnSkip =  document.querySelector('.form-footer .skip');
     const AvatarDiv = document.querySelector('.avatar-update');
     const form = document.querySelector('#user-profile-form')
 
 
-    {% comment %} fullName.addEventListener('input', () => {
-        if (fullName.value.trim() !== '') {
-            btnContinue.disabled = false;
-       } else {
-            btnContinue.disabled = true;
-        }
-    ) {% endcomment %}
-    
-{% comment %}     
-    form.addEventListener('submit', (e) => {
-        if (fullName.value.trim() === '') {
-            e.preventDefault();
-            alert(`Please fill out you full name!`)
-        }
-    }) {% endcomment %}
+    if (fullName.value !== '') {
+        btnContinue.classList.remove('disabled');
+    } else {
+        btn.style.cursor = 'not-allowed';
+    }
 
-    btnSkip.addEventListener('click', () => {
-        window.location.href = '/';
-    })
+    fullName.addEventListener('input', (e) => {
+        if (e.target.value.trim() !== '') {
+            btnContinue.classList.remove('disabled');
+            btn.style.cursor = 'auto';
+        } else {
+            btnContinue.classList.add('disabled');
+            btn.style.cursor = 'not-allowed';
+        }
+    });
+    
 
     fileInput.addEventListener('change', () => {
         const avatar = document.getElementById('form-avatar');

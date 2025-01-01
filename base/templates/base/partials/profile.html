@@ -23,12 +23,12 @@
         </div>
         <div class="profile-info-item phone-number-info">
             <img src="{% static 'images/icons/telephone.png' %}" alt="telephone-icon" class="profile-icon">
-            <p>{% if request.user.profile.phone_number %} {{ request.user.profile.phone_number }}{% endif %}</p>
+            <p>{% if request.user.profile.phone_number %} {{ request.user.profile.phone_number }}{% else %}Enter tel...{% endif %}</p>
         </div>
 
         <div class="profile-info-item bio-info">
             <img src="{% static 'images/icons/bio.png' %}" alt="bio-icon" class="profile-icon">
-            <p>{% if request.user.profile.bio %} {{ request.user.profile.bio }}{% endif %}</p>
+            <p>{% if request.user.profile.bio %} {{ request.user.profile.bio }}{% else %}Say something about yourself...{% endif %}</p>
         </div>
 
     </div>

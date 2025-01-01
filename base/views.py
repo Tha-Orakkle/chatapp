@@ -2,7 +2,9 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-import requests
+from django.urls import reverse, resolve
+# import requests
+from urllib.parse import urlparse
 
 from .forms import MyUserCreationForm, UserProfileForm
 from .models import User, UserProfile, Conversation, Message
@@ -12,6 +14,8 @@ API_BASE_URL = "http://127.0.0.1:8000/api/v1/"
 
 @login_required
 def index(request):
+    if not request.user.profile.registration_complete:
+        return redirect('register-user-profile')
     conversations = request.user.conversations
     context = {
         'title': 'Home',
@@ -47,11 +51,19 @@ def register(request):
 
 @login_required
 def register_user_profile(request):
+    # prev_page_url = request.META.get('HTTP_REFERER')
+    # path = urlparse(prev_page_url).path
+    # print(path)
+    if request.user.profile.registration_complete:
+        return redirect('home')
+   
     context = {'title': 'User Profile'}
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if form.is_valid():
-            form.save()
+            user_profile = form.save(commit=False)
+            user_profile.registration_complete = True
+            user_profile.save()
             return redirect('home')
         
         context.update({'form': form})
