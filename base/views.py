@@ -12,9 +12,11 @@ API_BASE_URL = "http://127.0.0.1:8000/api/v1/"
 
 @login_required
 def index(request):
+    conversations = request.user.conversations
     context = {
         'title': 'Home',
-        'conversations': request.user.conversations.all()
+        'conversations': conversations.all(),
+        'unread_msg_count': sum(conversations.values_list('unread_msg_count', flat=True))
     }
 
     return render(request, 'base/index.html', context)

@@ -27,6 +27,21 @@ class ConversationView(APIView):
             'conversation': convo_serializer.data,
             'messages': msg_serializer.data
         })
+   
+    def put(self, request, conversation_id):
+        """updates conversation obj. partciculary unread_msg_count"""
+        try:
+            conversation = request.user.conversations.get(id=conversation_id)
+        except Conversation.DoesNotExist:
+            return Response({'detail': 'Invalid Conversation ID'}, status=status.HTTP_400_BAD_REQUEST)
+        action = request.GET.get('action')
+        if action == 'add':
+            conversation.unread_msg_count += 1
+        elif action == 'remove':
+            conversation.unread_msg_count = 0
+        conversation.save()
+        return Response({'success': True, 'detail': 'unread message count updated successfully'})
+       
         
     def delete(self, request, conversation_id):
         """ Deletes a Conversation  """

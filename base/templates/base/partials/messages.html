@@ -2,7 +2,7 @@
 
 <div class="messages-section section">
     <div class="messages-header">
-        <h2>Messages <span>(message count)</span></h2>
+        <h2>Messages <span class="{% if not unread_msg_count %}hidden{% endif %}">({{ unread_msg_count }})</span></h2>
         <div class="search-container">
             <input type="text" placeholder="Search..." class="search-input">
             <img src="{% static 'images/icons/search.png' %}" alt="search icon" class="search-icon">
@@ -17,24 +17,6 @@
                 class="start-new-convo-icon">
         </button>
     </div>
-    
-
-    {% comment %} <div class="favorite-conversations hidden">
-        <h6 class="favorites-header">FAVORITES</h6>
-        <div class="conversation">
-            <div class="conversation-avatar conversation-item"></div>
-            <div class="conversation-info conversation-item">
-                <p class="conversation-with">Victoria Lane</p>
-                <p>Hey, How are you doing?</p>
-            </div>
-            <div class="unread-messages">
-                <p>79</p>
-            </div>
-            <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
-        </div>
-        
-
-    </div> {% endcomment %}
 
     <div class="open-conversations-list scroll-container">
         
@@ -49,8 +31,8 @@
                 <p class="conversation-with-name">{{ conversation.conversation_with.username }}</p>
                 <p>{{ conversation.messages.first.body|truncatechars:20 }}</p>
             </div>
-            <div class="unread-messages">
-                <p>0</p>
+            <div class="unread-messages {% if conversation.unread_msg_count %}active{% endif %}">
+                <p>{{ conversation.unread_msg_count }}</p>
             </div>
             <img src="{% static 'images/icons/options.png' %}" alt="options-icon" class="options">
             <div class="options-dialog">

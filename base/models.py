@@ -90,6 +90,7 @@ class Conversation(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='conversations')
     conversation_with = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    unread_msg_count = models.IntegerField(default=0, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

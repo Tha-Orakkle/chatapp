@@ -80,11 +80,17 @@ const chatAppWebSocket = () => {
             const conversation = get_or_create_conversation(data);
             update_conversation_content(data, conversation);
             move_conversation_to_top(conversation);
+            // update message count at header
+            update_message_count('add', 1);
+            // make put PUT API CALL
+            update_message_count_backend('add', data.message.conversation);
+
         }
     }
 };
 
 chatAppWebSocket();
+
 
 
 /*
@@ -130,6 +136,46 @@ function get_cookie(name) {
 function scroll_to_bottom() {
     chatlog.scrollTop = chatlog.scrollHeight;
 }
+
+// updates the message count on the frontend
+function update_message_count(action, num) {
+    const unread_msg_span =  document.querySelector('.messages-header h2 span');
+    let x;
+    if (action === 'add') {
+        x = parseInt(unread_msg_span.textContent.replace('(', '').replace(')', '').trim()) + num;
+    } else if (action === 'remove') {
+        x = parseInt(unread_msg_span.textContent.replace('(', '').replace(')', '').trim()) - num;
+    }
+
+    unread_msg_span.textContent = `(${x})`;
+    unread_msg_span.style.display = x > 0 ? 'inline' : 'none';
+}
+
+// updates the message count on the backend 
+async function update_message_count_backend(action, conversation_id) {
+    const url = API_BASE_URL + `conversations/${conversation_id}/?action=${action}`;
+    let response = null;
+    try {
+        response = await fetch(url, {
+            'method': 'PUT',
+            'credentials': 'same-origin'
+        })
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || 'An error occurred');
+        }
+        console.log(data);
+
+    } catch (error) {
+        console.error(error.message);
+        if (response && response.status === 401){
+            await get_token();
+            update_message_count_backend(action, conversation_id);
+        }
+
+    }
+}
+
 
 // moves a conversation to the top of the conversations list
 function move_conversation_to_top(conversation=null) {
@@ -251,7 +297,7 @@ function extract_messages_html(message) {
         <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
          <div class="options-dialog">
             <button class="od-boomark">Bookmark</button>
-            <button class="od-delete-msg">Delete Message</button>
+            <button class="od-delete-msg">Delete message for you</button>
         </div>
         <span>${message.created_at}</span>
         <div class="popup delete-msg overlay">
@@ -268,7 +314,7 @@ function extract_messages_html(message) {
         html = `
         <div class="options-dialog">
             <button class="od-boomark">Bookmark</button>
-            <button class="od-delete-msg">Delete Message</button>
+            <button class="od-delete-msg">Delete message for you</button>
         </div>
         <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
         <p>${message.body}</p>
@@ -364,7 +410,7 @@ function openWebSocket(uid, callback) {
                 <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
                 <div class="options-dialog">
                     <button class="od-boomark">Bookmark</button>
-                    <button class="od-delete-msg">Delete Message</button>
+                    <button class="od-delete-msg">Delete message for you</button>
                 </div>
                 <span>${data.message.created_at}</span>
                 <div class="popup delete-msg overlay">
@@ -381,7 +427,7 @@ function openWebSocket(uid, callback) {
                 html = `
                 <div class="options-dialog">
                     <button class="od-boomark">Bookmark</button>
-                    <button class="od-delete-msg">Delete Message</button>
+                    <button class="od-delete-msg">Delete message for you</button>
                 </div>
                 <img src="/static/images/icons/options.png" alt="options-icon" class="options chat-log-options">
                 <p>${data.message.body}</p>
@@ -413,9 +459,12 @@ function openWebSocket(uid, callback) {
 
 // prepares chat box for conversation history
 function load_chat_box(conversation) {
-    const unread_messages_div = conversation.querySelector('.unread-messages');
-    unread_messages_div.innerHTML = `<p>0</p>`;
-    unread_messages_div.classList.remove('active');
+    const unread_chat_msg_count = conversation.querySelector('.unread-messages p');
+    const num = parseInt(unread_chat_msg_count.textContent.trim())
+    update_message_count('remove', num);
+    update_message_count_backend('remove', conversation.getAttribute('data-convo-id'));
+    unread_chat_msg_count.innerHTML = '0';
+    unread_chat_msg_count.parentElement.classList.remove('active');
     contact_data.id = conversation.getAttribute('data-user-id');
     chat_box_container.style.padding = '0';
     chat_box_landing.style.display = 'none';
