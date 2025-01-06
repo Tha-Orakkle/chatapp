@@ -1,3 +1,4 @@
+const homeBtn = document.querySelector('.app-logo');
 const profileNav = document.getElementById('profile-nav');
 const messagesNav = document.getElementById('messages-nav');
 const contactNav = document.getElementById('contact-nav');
@@ -12,6 +13,10 @@ const bookmarkSection = document.querySelector('.bookmark-section');
 const profileBtn = document.querySelector('.profile-avatar-options');
 const profilePopup = document.querySelector('.profile-popup');
 
+
+homeBtn.addEventListener('click', ()=> {
+    window.location.href = '/';
+})
 
 profileNav.addEventListener('click', () => {
     const selectedNav = document.querySelector('.selected');

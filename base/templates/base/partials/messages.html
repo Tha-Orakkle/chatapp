@@ -3,7 +3,7 @@
 <div class="messages-section section">
     <div class="messages-header">
         <h2>Messages <span class="{% if not unread_msg_count %}hidden{% endif %}">({{ unread_msg_count }})</span></h2>
-        <div class="search-container">
+        <div class="search-container messages-search">
             <input type="text" placeholder="Search..." class="search-input">
             <img src="{% static 'images/icons/search.png' %}" alt="search icon" class="search-icon">
         </div>
