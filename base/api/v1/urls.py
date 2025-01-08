@@ -5,11 +5,13 @@ from .conversation_views import ConversationView
 from .message_views import MessageView
 from .user_views import (
     UsersView, FollowingIDsView,
-    UserFollowingView, FollowORUnfollowUserView)
+    UserFollowingView, FollowORUnfollowUserView,
+    SearchUserView)
 
 urlpatterns = [
     path('token/', TokenGenerationView.as_view()),
     path('users/', UsersView.as_view()),
+    path('users/search/', SearchUserView.as_view()),
     path('users/<str:user_id>/', UsersView.as_view()),
     
     path('user/<str:user_id>/following/', UserFollowingView.as_view()),

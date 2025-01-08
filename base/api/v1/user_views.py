@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination as PNP
@@ -106,5 +107,19 @@ class UserFollowingView(APIView):
         serializer = UserSerializer(following, many=True)
         return Response(serializer.data)
     
-        
+
+class SearchUserView(APIView):
+    authentication_classes = [UserTokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
+    def get(self, request):
+        user_query = request.GET.get('q')
+        if user_query:
+            users = User.objects.filter(
+                Q(username__icontains=user_query) | Q(profile__full_name__icontains=user_query)
+            ).exclude(id=request.user.id)
+            serializers = UserSerializer(users, many=True)
+            return Response({'success': True, 'result': serializers.data})
+        return Response({'success': True, 'result': []})
+                    
+        
