@@ -45,15 +45,16 @@ class UsersView(APIView):
         except User.DoesNotExist:
             return Response({"detail": "invalid user ID"}, status=status.HTTP_400_BAD_REQUEST)
         
+        user_serializer = UserSerializer(user, data=request.data, partial=True)
+        if not user_serializer.is_valid():
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
         profile_serializer = UserProfileSerializer(
             user.profile, data=request.data, partial=True)
 
         if not profile_serializer.is_valid():
             return Response(profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        user_serializer = UserSerializer(user, data=request.data, partial=True)
-        if not user_serializer.is_valid():
-            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         profile_serializer.validated_data['full_name'] = profile_serializer.validated_data['full_name'].title().strip()
         profile_serializer.save()

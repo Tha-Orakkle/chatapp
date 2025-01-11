@@ -13,7 +13,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['bio', 'full_name', 'avatar', 'phone_number']
-    
+            
+
     def validate_phone_number(self, value):
         """ Validates phone number """
         if value:
@@ -44,6 +45,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         value.file = ContentFile(output.read())
         value.file.name = value.name
         return value
+
         
 
 class UserSerializer(serializers.ModelSerializer):

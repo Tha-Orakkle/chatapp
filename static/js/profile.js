@@ -21,7 +21,7 @@ function create_errors(data) {
     error_body.textContent = '';
     for (let x in data) {
         const error = document.createElement('p');
-        error.textContent = `*${data[x]}`;
+        error.textContent = `*${x}: ${data[x]}`;
         error_body.appendChild(error);
     }
     edit_profile_errors.style.display = 'flex';
@@ -30,7 +30,7 @@ function create_errors(data) {
     }, 2000);
 }
 
-function update_all_user_data(data) {
+function update_user_data(data) {
     const all_avatars = document.querySelectorAll('.avatar.account-user');
     const profile_name = document.querySelector('.profile-header h3');
     const profile_username = document.querySelector('.profile-info-item.username-info p')
@@ -85,20 +85,19 @@ update_btn.addEventListener('click', (e) => {
     e.preventDefault();
     const form_data = new FormData();
     const file = edit_profile_input.files[0];
-    const username = document.querySelector('#username').value
-    const full_name = document.querySelector('#full_name').value
-    const email = document.querySelector('#email').value
-    const phone_number = document.querySelector('#phone_number').value
-    const bio = document.querySelector('#bio').value
+    const username = document.querySelector('#username').value.trim().toLowerCase();
+    const full_name = document.querySelector('#full_name').value.trim();
+    const email = document.querySelector('#email').value.trim().toLowerCase();
+    const phone_number = document.querySelector('#phone_number').value.trim();
+    const bio = document.querySelector('#bio').value.trim();
 
     if (file) form_data.append('avatar', file);
-    if (username) form_data.append('username', username);
-    if (email) form_data.append('email', email);
-    if (full_name) form_data.append('full_name', full_name);
-    // if (phone_number) form_data.append('phone_number', phone_number);
+    form_data.append('username', username);
+    form_data.append('full_name', full_name);
+    form_data.append('email', email);
     form_data.append('phone_number', phone_number);
     form_data.append('bio', bio);
-    // if (bio) form_data.append('bio', bio);
+    
     let response = null;
     let data = null
 
@@ -117,7 +116,7 @@ update_btn.addEventListener('click', (e) => {
             if (!response.ok) {
                 throw new Error();
             }
-            update_all_user_data(data.data);
+            update_user_data(data.data);
             success.innerHTML = `<p>${data.message}</p>`
             success.style.display = 'block';
             edit_profile_section.style.display = 'none';

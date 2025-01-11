@@ -54,7 +54,7 @@ class UserProfile(models.Model):
     avatar = models.ImageField(upload_to=user_upload_image_path, 
                                default='default/default.jpg',
                                null=True, blank=True)
-    full_name = models.CharField(max_length=68, default="", blank=True)
+    full_name = models.CharField(max_length=68)
     bio = models.TextField(default="", blank=True)
     # bio = models.CharField(max_length=158, default="", blank=True)
     phone_number = PhoneNumberField(null=True, blank=True)

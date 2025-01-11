@@ -176,18 +176,19 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 SOCIAL_AUTH_GITHUB_KEY = os.getenv('GITHUB_CLIENT_ID')
 SOCIAL_AUTH_GITHUB_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
 
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'base.pipeline.social_auth_pipeline.update_user_pipeline',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
 # phonenumber field custom default settings 
 PHONENUMBER_DEFAULT_REGION = 'NG' #for Nigeria
 PHONENUMBER_DEFAULT_FORMAT = 'INTERNATIONAL'
-
-
-# restframework settings
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'base.backends.authenticate.UserTokenAuthentication',
-#         'rest_framework.authentication.TokenAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ]
-# }

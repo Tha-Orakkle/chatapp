@@ -19,7 +19,7 @@
         </div>
         <div class="profile-info-item email-info">
             <img src="{% static 'images/icons/email.png' %}" alt="email-icon" class="profile-icon">
-            <p>{{ request.user.email }}</p>
+            <p>{% if request.user.email %}{{ request.user.email }}{% else %} Enter email... {% endif %} </p>
         </div>
         <div class="profile-info-item phone-number-info">
             <img src="{% static 'images/icons/telephone.png' %}" alt="telephone-icon" class="profile-icon">
